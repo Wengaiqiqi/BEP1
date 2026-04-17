@@ -1,0 +1,3498 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEP1备考系统</title>
+  <style>
+    body {
+        font-family: 'Microsoft YaHei', Arial, sans-serif;
+        line-height: 1.6;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f4f8;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+    .container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+    }
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 2.2rem;
+        font-weight: 600;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+    }
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+    .question {
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #3498db;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .question:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .question-title {
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #2c3e50;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .option {
+        margin-left: 5px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+    }
+    .option:hover {
+        background-color: #f7f9fc;
+    }
+    .option label {
+        cursor: pointer;
+        display: inline-block;
+        width: 100%;
+    }
+    .option input[type="radio"] {
+        margin-right: 10px;
+        transform: scale(1.2);
+    }
+    .btn {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        display: block;
+        margin: 25px auto;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn:hover {
+        background: linear-gradient(135deg, #2980b9, #3498db);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+    .btn:active {
+        transform: translateY(0);
+    }
+    .btn-secondary {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+    }
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+    }
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #c0392b, #e74c3c);
+    }
+    #results {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        display: none;
+    }
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f4f8;
+    }
+    .correct {
+        color: #27ae60;
+    }
+    .incorrect {
+        color: #e74c3c;
+    }
+    .filter-controls {
+        margin: 20px 0;
+        text-align: center;
+    }
+    .filter-btn {
+        background-color: #f7f9fc;
+        border: 1px solid #ddd;
+        padding: 8px 15px;
+        margin: 0 5px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+    .filter-btn:hover {
+        background-color: #e6f0ff;
+    }
+    .filter-btn.active {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+    .hidden {
+        display: none;
+    }
+    .status {
+        font-weight: bold;
+        margin-left: 10px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    .status.correct {
+        background-color: rgba(46, 204, 113, 0.15);
+    }
+    .status.incorrect {
+        background-color: rgba(231, 76, 60, 0.15);
+    }
+    .progress {
+        margin: 25px 0;
+        height: 8px;
+        background-color: #e6eef5;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+        width: 0;
+        transition: width 0.5s;
+        border-radius: 10px;
+    }
+    /* 密码保护和题目数量选择样式 */
+    .password-container, .mode-selection-container, .question-count-container {
+        text-align: center;
+        margin: 50px auto;
+        max-width: 500px;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .password-container::before, .mode-selection-container::before, .question-count-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+    }
+    .password-input, .question-count-input {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        border: 2px solid #e6eef5;
+        border-radius: 8px;
+        margin: 15px 0;
+        transition: all 0.3s;
+        box-sizing: border-box;
+    }
+    .password-input:focus, .question-count-input:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    .error-message {
+        color: #e74c3c;
+        margin-top: 15px;
+        display: none;
+        padding: 10px;
+        background-color: rgba(231, 76, 60, 0.1);
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    /* 用时显示样式 */
+    #timer {
+        text-align: center;
+        font-size: 18px;
+        margin-bottom: 25px;
+        color: #2c3e50;
+        background: #f7f9fc;
+        padding: 10px;
+        border-radius: 30px;
+        font-weight: 500;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    /* 模式选择样式 */
+    .mode-btn-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .mode-btn {
+        padding: 20px 15px;
+        font-size: 16px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-height: 120px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+    }
+    .mode-btn i {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+    .mode-btn small {
+        font-size: 12px;
+        opacity: 0.9;
+        line-height: 1.3;
+        margin-top: 5px;
+        max-width: 90%;
+    }
+    .mode-btn.exam-mode {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+    .mode-btn.practice-mode {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+    }
+    .mode-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0, 0, 0, 0.15);
+    }
+    .mode-btn:active {
+        transform: translateY(-1px);
+    }
+    /* 答案反馈样式 */
+    .answer-feedback {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 500;
+        display: none;
+    }
+    .answer-feedback.correct {
+        background-color: rgba(46, 204, 113, 0.15);
+        color: #27ae60;
+        border-left: 4px solid #27ae60;
+    }
+    .answer-feedback.partial {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+        border-left: 4px solid #f39c12;
+    }
+    .answer-feedback.incorrect {
+        background-color: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+        border-left: 4px solid #e74c3c;
+    }
+    
+    .answer-feedback.partial {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+        border-left: 4px solid #f39c12;
+    }
+    
+    /* 多选题样式 */
+    .question-type {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    .answer-summary {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: rgba(52, 152, 219, 0.1);
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+    
+    .answer-summary .user-answer {
+        margin-bottom: 5px;
+        color: #7f8c8d;
+    }
+    
+    .answer-summary .correct-answer {
+        color: #27ae60;
+        font-weight: 600;
+    }
+    
+    /* 结果页面题目状态样式 */
+    .question.correct {
+        border-left: 4px solid #27ae60;
+        background-color: rgba(46, 204, 113, 0.05);
+    }
+    
+    .question.partial {
+        border-left: 4px solid #f39c12;
+        background-color: rgba(243, 156, 18, 0.05);
+    }
+    
+    .question.incorrect {
+        border-left: 4px solid #e74c3c;
+        background-color: rgba(231, 76, 60, 0.05);
+    }
+    
+    .status.correct {
+        color: #27ae60;
+        font-weight: 600;
+    }
+    
+    .status.partial {
+        color: #f39c12;
+        font-weight: 600;
+    }
+    
+    .status.incorrect {
+        color: #e74c3c;
+        font-weight: 600;
+    }
+    
+    /* 选项状态样式 */
+    .option.correct {
+        background-color: rgba(46, 204, 113, 0.15);
+        color: #27ae60;
+        border: 1px solid #27ae60;
+    }
+    
+    .option.incorrect {
+        background-color: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+    }
+    
+    .option.missed {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+        border: 1px solid #f39c12;
+        border-style: dashed;
+    }
+    /* 结果页面样式优化 */
+    .result-summary {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0 30px;
+        padding: 20px;
+        background: #f7f9fc;
+        border-radius: 10px;
+    }
+    .result-item {
+        text-align: center;
+    }
+    .result-item .value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .result-item .label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+    /* 图标 */
+    .icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+    
+    /* 中等屏幕尺寸优化 */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .mode-btn-container {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+        #mode-selection .mode-btn-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+        .container {
+            padding: 15px;
+        }
+        .mode-btn-container {
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .mode-btn {
+            min-height: 100px;
+            padding: 15px 10px;
+            font-size: 14px;
+        }
+        .mode-btn i {
+            font-size: 24px;
+        }
+        .mode-btn small {
+            font-size: 11px;
+        }
+        .result-summary {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+    /* 高亮当前题目 */
+    .current-question {
+        border-left-color: #f39c12;
+        background-color: #fffcf5;
+    }
+    /* 选项选中后的样式 */
+    .option.selected {
+        background-color: #e6f0ff;
+        border-left: 3px solid #3498db;
+    }
+    /* 阶段性练习顺序选择样式 */
+    input[name="stage-order"]:checked + span {
+        font-weight: 600;
+        color: #3498db;
+    }
+    input[name="stage-order"]:checked {
+        accent-color: #3498db;
+    }
+    label:has(input[name="stage-order"]:checked) {
+        background-color: #e6f0ff;
+        border-color: #3498db !important;
+    }
+    label:has(input[name="stage-order"]):hover {
+        border-color: #3498db;
+        background-color: #f7f9fc;
+    }
+    /* 动画效果 */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    /* 大题记忆功能样式 */
+    .memory-item {
+        margin-bottom: 20px;
+        border: 2px solid #e6eef5;
+        border-radius: 10px;
+        background-color: #ffffff;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .memory-item:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-color: #3498db;
+    }
+    .memory-question {
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        font-weight: 500;
+        color: #2c3e50;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .memory-options {
+        margin-top: 12px;
+        padding-left: 20px;
+    }
+    .memory-option-item {
+        margin: 8px 0;
+        color: #555;
+        font-size: 15px;
+        padding: 5px 0;
+        line-height: 1.6;
+    }
+    .memory-toggle-btn {
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .memory-toggle-btn:hover {
+        background: linear-gradient(135deg, #2980b9, #21618c);
+        transform: translateY(-1px);
+    }
+    .memory-toggle-btn i {
+        transition: transform 0.3s;
+    }
+    .memory-toggle-btn.active i {
+        transform: rotate(180deg);
+    }
+    .memory-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, padding 0.4s ease;
+        padding: 0 20px;
+        background-color: #f8f9fa;
+    }
+    .memory-answer.show {
+        max-height: 500px;
+        padding: 20px;
+    }
+    .memory-answer-content {
+        color: #27ae60;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 15px;
+        background-color: #e8f8f5;
+        border-left: 4px solid #27ae60;
+        border-radius: 5px;
+    }
+    .memory-list-container {
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    .memory-list-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    .memory-list-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    .memory-list-container::-webkit-scrollbar-thumb {
+        background: #3498db;
+        border-radius: 10px;
+    }
+    .memory-list-container::-webkit-scrollbar-thumb:hover {
+        background: #2980b9;
+    }
+    body.dark-theme .memory-item {
+        background-color: #242c48;
+        border-color: #2a365c;
+    }
+    body.dark-theme .memory-question {
+        background: linear-gradient(135deg, #1f3156, #242c48);
+        color: #f0f0f0;
+        border-bottom-color: #2a365c;
+    }
+    body.dark-theme .memory-option-item {
+        color: #b8c5d6;
+    }
+    body.dark-theme .memory-answer {
+        background-color: #1f3156;
+    }
+    body.dark-theme .memory-answer-content {
+        background-color: #1f3156;
+        color: #2ecc71;
+        border-left-color: #2ecc71;
+    }
+    
+    /* 主题切换按钮 */
+    .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        transition: all 0.3s;
+    }
+    .theme-toggle:hover {
+        transform: scale(1.1);
+    }
+    
+    /* 暗色主题 */
+    body.dark-theme {
+        background-color: #1a1a2e;
+        color: #f0f0f0;
+    }
+    body.dark-theme .container,
+    body.dark-theme .question,
+    body.dark-theme #results,
+    body.dark-theme .password-container,
+    body.dark-theme .mode-selection-container,
+    body.dark-theme .question-count-container {
+        background-color: #16213e;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    body.dark-theme h1,
+    body.dark-theme h2,
+    body.dark-theme .question-title {
+        color: #f0f0f0;
+    }
+    body.dark-theme .option:hover {
+        background-color: #1f3156;
+    }
+    body.dark-theme .option.selected {
+        background-color: #1f3156;
+    }
+    body.dark-theme .password-input,
+    body.dark-theme .question-count-input {
+        background-color: #242c48;
+        border-color: #2a365c;
+        color: #f0f0f0;
+    }
+    body.dark-theme #timer {
+        background-color: #1f3156;
+        color: #f0f0f0;
+    }
+    body.dark-theme .filter-btn {
+        background-color: #242c48;
+        border-color: #2a365c;
+        color: #f0f0f0;
+    }
+    body.dark-theme .progress {
+        background-color: #242c48;
+    }
+  </style>
+  <!-- 添加一些图标 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- 主题切换按钮 -->
+  <div class="theme-toggle" id="theme-toggle">
+    <i class="fas fa-moon"></i>
+  </div>
+
+  <!-- 密码保护层 -->
+  <div id="password-protection" class="password-container fade-in">
+      <h2><i class="fas fa-lock"></i> 请输入密码访问考试系统</h2>
+      <p style="margin: 0 0 10px; color: #7f8c8d; font-size: 14px;">新设备首次登录需要验证，验证成功后当前设备将免密登录</p>
+      <input type="password" id="password-input" class="password-input" placeholder="请输入密码" autofocus>
+      <button id="password-submit" class="btn"><i class="fas fa-sign-in-alt"></i> 提交</button>
+      <div id="error-message" class="error-message"><i class="fas fa-exclamation-circle"></i> 密码错误，请重试！</div>
+  </div>
+
+  <!-- 题库选择层 -->
+  <div id="bank-selection" class="mode-selection-container hidden fade-in">
+      <h2><i class="fas fa-database"></i> 请选择题库</h2>
+      <p>选择您要练习的题库类型</p>
+      <div class="mode-btn-container">
+          <button id="mixed-bank-btn" class="mode-btn" style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+              <i class="fas fa-layer-group"></i>
+              综合练习
+              <small id="bank-count-mixed">0题</small>
+          </button>
+          <button id="ai-bank-btn" class="mode-btn exam-mode">
+              <i class="fas fa-brain"></i>
+              人工智能专项
+              <small id="bank-count-ai">0题</small>
+          </button>
+          <button id="p4-bank-btn" class="mode-btn practice-mode">
+              <i class="fas fa-code"></i>
+              P4专项题库
+              <small id="bank-count-p4">0题</small>
+          </button>
+          <button id="cloud-bank-btn" class="mode-btn" style="background: linear-gradient(135deg, #e67e22, #d35400); color: white;">
+              <i class="fas fa-cloud"></i>
+              云计算专项
+              <small id="bank-count-cloud">0题</small>
+          </button>
+          <button id="network-bank-btn" class="mode-btn" style="background: linear-gradient(135deg, #16a085, #1abc9c); color: white;">
+              <i class="fas fa-network-wired"></i>
+              计算机网络专项
+              <small id="bank-count-network">0题</small>
+          </button>
+          <button id="sdn-bank-btn" class="mode-btn" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white;">
+              <i class="fas fa-sitemap"></i>
+              软件定义专项题库
+              <small id="bank-count-sdn">0题</small>
+          </button>
+          <button id="agent-bank-btn" class="mode-btn" style="background: linear-gradient(135deg, #7f8c8d, #95a5a6); color: white;">
+              <i class="fas fa-robot"></i>
+              智能体专项
+              <small id="bank-count-agent">0题</small>
+          </button>
+          <button id="llm-bank-btn" class="mode-btn" style="background: linear-gradient(135deg, #1f7a8c, #2f9fb4); color: white;">
+              <i class="fas fa-brain"></i>
+              大模型专项
+              <small id="bank-count-llm">0题</small>
+          </button>
+      </div>
+
+      <div style="margin-top: 20px; text-align: left;">
+          <label for="bank-search-input" style="display:block; margin-bottom:8px; font-weight:600; color:#2c3e50;">
+              <i class="fas fa-search"></i> 搜题（输入即检索，题目/选项/答案均可匹配）
+          </label>
+          <input id="bank-search-input" type="text" class="question-count-input" placeholder="输入关键词，如 OpenFlow、Docker、智能体" style="margin:0;">
+          <div id="bank-search-meta" style="margin-top:8px; font-size:13px; color:#7f8c8d; display:none;"></div>
+          <div id="bank-search-results" style="margin-top:10px; max-height:260px; overflow-y:auto; border:1px solid #e6eef5; border-radius:8px; background:#fff; display:none;"></div>
+      </div>
+  </div>
+
+  <!-- 大题记忆层 -->
+  <div id="memory-selection" class="mode-selection-container hidden fade-in">
+      <h2><i class="fas fa-graduation-cap"></i> 大题记忆</h2>
+      <p>点击按钮查看答案，帮助您快速记忆重点题目</p>
+      <div class="memory-list-container" id="memory-list">
+          <!-- 记忆题目将由JS动态生成 -->
+      </div>
+      <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+          <button id="memory-back-btn" class="btn btn-danger">
+              <i class="fas fa-arrow-left"></i> 返回模式选择
+          </button>
+      </div>
+  </div>
+
+  <!-- 模式选择层 -->
+  <div id="mode-selection" class="mode-selection-container hidden fade-in">
+      <h2><i class="fas fa-tasks"></i> 请选择学习模式</h2>
+      <p>选择适合您的学习方式</p>
+      <div class="mode-btn-container">
+          <button id="practice-mode-btn" class="mode-btn practice-mode">
+              <i class="fas fa-book"></i>
+              练习模式
+              <small>做题后立即查看答案</small>
+          </button>
+          <button id="exam-mode-btn" class="mode-btn exam-mode">
+              <i class="fas fa-clipboard-check"></i>
+              考试模式
+              <small>提交后统一查看结果</small>
+          </button>
+          <button id="stage-mode-btn" class="mode-btn practice-mode">
+              <i class="fas fa-layer-group"></i>
+              阶段性练习/考试
+              <small>选择题目区间进行针对性练习</small>
+          </button>
+          <button id="memory-mode-btn" class="mode-btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white;">
+              <i class="fas fa-graduation-cap"></i>
+              大题记忆
+              <small>查看大题和参考答案</small>
+          </button>
+      </div>
+      <button id="mode-back-btn" class="btn btn-danger" style="margin-top: 20px;">
+          <i class="fas fa-arrow-left"></i> 返回题库选择
+      </button>
+  </div>
+
+  <!-- 阶段性练习题目区间选择层 -->
+  <div id="stage-selection" class="question-count-container hidden fade-in">
+      <h2><i class="fas fa-sliders-h"></i> 阶段性练习 - 选择题目区间</h2>
+      <p>题库总数：<span id="stage-total-count">955</span>题</p>
+      <div style="margin: 20px 0;">
+          <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: 500;">起始题号：</label>
+              <input type="number" id="stage-start-input" class="question-count-input" min="1" placeholder="请输入起始题号" style="margin: 0;">
+          </div>
+          <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: 500;">结束题号：</label>
+              <input type="number" id="stage-end-input" class="question-count-input" min="1" placeholder="请输入结束题号" style="margin: 0;">
+          </div>
+          <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: 500;">出题顺序：</label>
+              <div style="display: flex; gap: 10px; justify-content: center;">
+                  <label style="display: flex; align-items: center; cursor: pointer; padding: 10px 20px; border: 2px solid #e6eef5; border-radius: 8px; transition: all 0.3s;">
+                      <input type="radio" name="stage-order" value="sequential" checked style="margin-right: 8px; transform: scale(1.2);">
+                      <span><i class="fas fa-sort-numeric-down"></i> 顺序出题</span>
+                  </label>
+                  <label style="display: flex; align-items: center; cursor: pointer; padding: 10px 20px; border: 2px solid #e6eef5; border-radius: 8px; transition: all 0.3s;">
+                      <input type="radio" name="stage-order" value="random" style="margin-right: 8px; transform: scale(1.2);">
+                      <span><i class="fas fa-random"></i> 随机打乱</span>
+                  </label>
+              </div>
+          </div>
+      </div>
+      <div style="margin: 20px 0; padding: 15px; background: #f7f9fc; border-radius: 8px; font-size: 14px; color: #7f8c8d;">
+          <i class="fas fa-info-circle"></i> 提示：例如选择 1-10 表示练习第1题到第10题。顺序出题按题号顺序显示，随机打乱则会打乱题目顺序。
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+          <button id="stage-practice-submit" class="btn btn-secondary" style="flex: 1; max-width: 200px;">
+              <i class="fas fa-book"></i> 练习模式
+          </button>
+          <button id="stage-exam-submit" class="btn" style="flex: 1; max-width: 200px;">
+              <i class="fas fa-clipboard-check"></i> 考试模式
+          </button>
+      </div>
+      <button id="stage-back-btn" class="btn btn-danger" style="margin-top: 10px;">
+          <i class="fas fa-arrow-left"></i> 返回模式选择
+      </button>
+      <div id="stage-error-message" class="error-message"><i class="fas fa-exclamation-circle"></i> 请输入有效的题目区间！</div>
+  </div>
+
+  <!-- 题目数量选择层 -->
+  <div id="question-count-selection" class="question-count-container hidden fade-in">
+      <h2><i class="fas fa-list-ol"></i> 请选择题目数量</h2>
+      <p>题库总数：955题</p>
+      <input type="number" id="question-count-input" class="question-count-input" min="1" max="955" placeholder="请输入题目数量（1-955）" autofocus>
+      <button id="question-count-submit" class="btn"><i class="fas fa-play"></i> 开始练习</button>
+      <button id="count-back-btn" class="btn btn-danger" style="margin-top: 10px;">
+          <i class="fas fa-arrow-left"></i> 返回模式选择
+      </button>
+      <div id="count-error-message" class="error-message"><i class="fas fa-exclamation-circle"></i> 请输入有效的题目数量！</div>
+  </div>
+
+  <!-- 考试系统内容 -->
+  <div id="exam-content" class="hidden fade-in">
+      <div class="container">
+          <h1>BEP1备考系统</h1>
+          
+          <!-- 显示当前模式 -->
+          <div id="current-mode" style="text-align: center; margin-bottom: 15px; font-weight: bold; color: #3498db;"></div>
+          
+          <!-- 显示作答用时 -->
+          <div id="timer"><i class="fas fa-clock"></i> 已用时: 00:00</div>
+          
+          <div class="progress">
+              <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          
+          <div id="exam-form">
+              <!-- 题目由 JavaScript 动态生成 -->
+          </div>
+          
+          <button id="submit-btn" class="btn"><i class="fas fa-paper-plane"></i> 提交答案</button>
+          
+          <div id="results">
+              <div class="result-header">
+                  <h2><i class="fas fa-chart-pie"></i> 测试结果</h2>
+                  <div>
+                      <span id="score">0</span>/<span id="total">0</span>
+                      <span>正确率: <span id="accuracy">0%</span></span>
+                  </div>
+              </div>
+              
+              <!-- 结果统计卡片 -->
+              <div class="result-summary">
+                  <div class="result-item">
+                      <span class="value" id="summary-score">0</span>
+                      <span class="label">得分</span>
+                  </div>
+                  <div class="result-item">
+                      <span class="value" id="summary-total">0</span>
+                      <span class="label">总题数</span>
+                  </div>
+                  <div class="result-item">
+                      <span class="value" id="summary-accuracy">0%</span>
+                      <span class="label">正确率</span>
+                  </div>
+                  <div class="result-item">
+                      <span class="value" id="summary-time">00:00</span>
+                      <span class="label">用时</span>
+                  </div>
+              </div>
+              
+              <!-- 显示总作答用时 -->
+              <div id="final-time" style="text-align: center; font-size: 16px; margin-bottom: 15px;"></div>
+              
+              <div class="filter-controls">
+                  <button class="filter-btn active" data-filter="all"><i class="fas fa-list"></i> 全部题目</button>
+                  <button class="filter-btn" data-filter="incorrect"><i class="fas fa-times"></i> 错题复习</button>
+              </div>
+              
+              <div id="result-details">
+                  <!-- 结果详情由 JavaScript 动态生成 -->
+              </div>
+              
+              <div style="text-align: center; margin-top: 30px;">
+                  <button id="restart-btn" class="btn btn-secondary"><i class="fas fa-redo"></i> 重新测试</button>
+                  <button id="reselect-btn" class="btn"><i class="fas fa-cog"></i> 返回模式选择</button>
+                  <button id="retry-incorrect-btn" class="btn btn-danger"><i class="fas fa-times-circle"></i> 错题重新测试</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <script>
+      // 题库映射关系 - 中文名称对应英文简写
+      const bankMapping = {
+          '综合练习': 'mixed',
+          '人工智能专项': 'ai',
+          'P4专项题库': 'p4',
+          '云计算专项': 'cloud',
+          '计算机网络专项': 'network',
+          '软件定义专项题库': 'sdn',
+          '智能体专项': 'agent',
+          '大模型专项': 'llm'
+      };
+
+      // 题库数据 - BEP1备考系统
+      const questionBanks ={
+          人工智能专项: [
+  {
+    "id": 1,
+    "question": "单层神经网络也是深度学习的一种。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 2,
+    "question": "前馈神经网络、卷积神经网络、循环神经网络和对抗神经网络（通常指生成对抗网络 GAN）是深度学习领域中非常重要的几类模型。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 3,
+    "question": "在全连接层之前，如果神经元数目过大，学习能力弱，有可能出现过拟合。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 4,
+    "question": "激励层所谓的激励就是对卷积层输出结果做一次非线性映射。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 5,
+    "question": "卷积运算是两个卷积核大小的矩阵的内积运算即为矩阵乘法。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 6,
+    "question": "决策树算法只能对离散值进行处理。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 7,
+    "question": "ID3算法中将计算得的信息增益最大的属性作为划分属性。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 8,
+    "question": "样本集合的信息熵越大代表样本集合的纯度越高。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 9,
+    "question": "决策树学习的关键是如何选择最优划分属性。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 10,
+    "question": "联邦学习无法防止数据泄露。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 11,
+    "question": "联邦学习不需要第三方分发密钥。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 12,
+    "question": "蒙特卡洛强化学习算法中，对轨迹中出现的每一对“状态-动作”记录其后的奖赏之和，作为该“状态-动作”对的一次累计奖赏采样值。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 13,
+    "question": "DQN算法是基于Q-Learning计算Q值，使用小批量暂存训练数据，在收集到足够的小批量训练数据后，使用训练数据，训练Q函数的神经网络参数。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 14,
+    "question": "机器学习算法中，集成学习策略包括Boosting、Stacking、Bagging和Marking。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 15,
+    "question": "随机森林算法的分类精度不会随着决策树数量的增加而提高。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 16,
+    "question": "决策树之间相关系数越低、每棵决策树分类精度越高的随机森林模型的分类效果越好。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 17,
+    "question": "cuDNN提供了一些优化技术，可以帮助程序员进一步提高深度学习模型的性能。以下哪项不是cuDNN提供的优化技术？",
+    "options": "A. 自动调整卷积算法; B. 卷积后处理; C. 内存管理; D. 数据压缩算法",
+    "answer": "D"
+  },
+  {
+    "id": 18,
+    "question": "神经元是神经网络的基本单元，它接收来自其他神经元的输入，神经元之间的连接由什么组成？",
+    "options": "A. 一组权重和一个偏置; B. 一个激活函数和一个偏置; C. 一组权重和一个激活函数; D. 一个权重和一个偏置",
+    "answer": "A"
+  },
+  {
+    "id": 19,
+    "question": "用于检验已经训练好的最终模型的泛化性能的数据是？",
+    "options": "A. 测试集; B. 训练集; C. 验证集; D. 处理集",
+    "answer": "A"
+  },
+  {
+    "id": 20,
+    "question": "在Embedding过程中，如果一个批次内文本数为32，每篇文本中词语为4，输出维度为128，以下哪个选项是正确的输出？",
+    "options": "A. (32,4,128); B. (32,128,4); C. (4,32,128); D. (128,32,4)",
+    "answer": "A"
+  },
+  {
+    "id": 21,
+    "question": "以下哪个选项，关于池化层作用描述不正确？",
+    "options": "A. 防止欠拟合; B. 拥有更大的感受野; C. 特征不变性; D. 减少神经元数量",
+    "answer": "A"
+  },
+  {
+    "id": 22,
+    "question": "假设卷积神经网络的输入大小为224×224×3，同时卷积神经网络第一层深度为1，且有5个大小为7×7的卷积核，那么神经网络下一层所接收到的数据维度是？",
+    "options": "A. 218×218×5; B. 217×217×8; C. 217×217×3; D. 220×220×5",
+    "answer": "A"
+  },
+  {
+    "id": 23,
+    "question": "假设卷积层输入矩阵维度是3，卷尺核尺寸5×5、卷积核数量为16，那么这层卷积层的参数个数为？",
+    "options": "A. 416; B. 400; C. 1200; D. 1216",
+    "answer": "D"
+  },
+  {
+    "id": 24,
+    "question": "关于随机森林描述不正确的是？",
+    "options": "A. 随机森林是一种集成学习算法; B. 随机森林的随机性主要体现在训练单决策树时，对样本和特征同时进行采样; C. 随机森林算法可以高度并行化; D. 随机森林预测时，根据单决策树分类误差进行加权投票",
+    "answer": "D"
+  },
+  {
+    "id": 25,
+    "question": "GAN中的两个模型为？",
+    "options": "A. 生成模型与判别模型; B. 生成模型与监督模型; C. 生成模型与对抗模型; D. 对抗模型与判别模型",
+    "answer": "A"
+  },
+  {
+    "id": 26,
+    "question": "关于GAN中描述正确的是？",
+    "options": "A. 生成对抗神经网络是一种机器学习模型; B. 生成对抗神经网络的学习方式是有监督学习; C. 生成对抗神经网络包含三或三个以上的模型; D. 生成对抗神经网络有两个模型",
+    "answer": "D"
+  },
+  {
+    "id": 27,
+    "question": "DQN是Q-Learning算法的一种变体，具体改变的方面不包括下面哪一项？",
+    "options": "A. DQN利用深度卷积神经网络估计值函数; B. DQN利用经验回放进行学习; C. DQN独立设置了目标网络来单独处理时间差分算法中的TD偏差; D. DQN利用Q表来记录Q值",
+    "answer": "D"
+  },
+  {
+    "id": 28,
+    "question": "深度Q学习（DQN）中的A、S和R分别代表Agent的？",
+    "options": "A. 动作、状态、奖励; B. 动作、奖励、状态; C. 状态、动作、奖励; D. 奖励、动作、状态",
+    "answer": "A"
+  },
+  {
+    "id": 29,
+    "question": "下面哪个不是蒙特卡洛方法工作过程的三个主要步骤？",
+    "options": "A. 构造或描述概率过程; B. 得到“状态-动作”值函数的估计; C. 实现从已知概率分布抽样; D. 建立各种估计量",
+    "answer": "B"
+  },
+  {
+    "id": 30,
+    "question": "下面关于蒙特卡洛方法描述错误的是？",
+    "options": "A. 蒙特卡洛方法也称统计模拟方法，是一种以概率统计理论为指导的一类非常重要的数值计算方法; B. 蒙特卡洛方法可以粗略地估计定积分值; C. 蒙特卡罗方法的工作过程可以归结为三个主要步骤：构造或描述概率过程；实现从已知概率分布抽样；建立各种估计量; D. 与蒙特卡罗方法对应的是不确定性算法",
+    "answer": "D"
+  },
+  {
+    "id": 31,
+    "question": "以下哪个不属于联邦学习的优势？",
+    "options": "A. 数据隔离，数据不会泄露到外部，满足用户隐私保护和数据安全的需求; B. 训练速度快; C. 能够保证模型质量无损，不会出现负迁移，保证联邦模型比割裂的独立模型效果好; D. 参与者地位对等，能够实现公平合作",
+    "answer": "B"
+  },
+  {
+    "id": 32,
+    "question": "下面哪个选项不属于联邦学习？",
+    "options": "A. 横向联邦学习; B. 纵向联邦学习; C. 联邦迁移学习; D. 合作联邦学习",
+    "answer": "D"
+  },
+  {
+    "id": 33,
+    "question": "一般的，一棵决策树包含__根节点、__内部结点和__叶结点？",
+    "options": "A. 一个、若干个、一个; B. 一个、若干个、若干个; C. 若干个、若干个、一个; D. 若干个、若干个、若干个",
+    "answer": "B"
+  },
+  {
+    "id": 34,
+    "question": "下面关于池化层的作用描述正确的是？",
+    "options": "A. 提取数据的特征; B. 通过重采样的方式，在不影响图像质量的情况下，压缩图片，减少参数; C. 通过降采样的方式，在不影响图像质量的情况下，压缩图片，减少参数; D. 对图像的特征进行融合处理",
+    "answer": "C"
+  },
+  {
+    "id": 35,
+    "question": "以下不属于卷积神经网络的基本层的是？",
+    "options": "A. 卷积层; B. 编码层; C. 池化层; D. 全连接层",
+    "answer": "B"
+  },
+  {
+    "id": 36,
+    "question": "深度学习的实质是？",
+    "options": "A. 推理机制; B. 映射机制; C. 识别机制; D. 模拟机制",
+    "answer": "B"
+  },
+  {
+    "id": 37,
+    "question": "深度学习中的“深度”是指？",
+    "options": "A. 计算机理解的深度; B. 中间神经单元网络的层次很多; C. 计算机的求解更加精准; D. 计算机对问题的处理更加灵活",
+    "answer": "B"
+  },
+  {
+    "id": 38,
+    "question": "LTE网络中，下列哪一项不是决定终端采样点接收信号参考功率的因素？",
+    "options": "A. 发射机天线增益; B. 接收机天线增益; C. 路径损耗; D. 信道复用方式",
+    "answer": "D"
+  },
+  {
+    "id": 39,
+    "question": "LTE网络中，下列哪项不能作为优化覆盖的调整参数？",
+    "options": "A. 天线功率; B. 天线电子倾角; C. 天线机械下倾角; D. 天线半径",
+    "answer": "D"
+  },
+  {
+    "id": 40,
+    "question": "下列哪一项参数属于基站侧数据？",
+    "options": "A. RSRP; B. IMEI; C. RSRQ; D. 物理扇区标识",
+    "answer": "D"
+  },
+  {
+    "id": 41,
+    "question": "马尔可夫性质强调在每一个动作状态序列中，下一个状态与什么有关？",
+    "options": "A. 只与系统的初始状态; B. 与系统的当前状态; C. 与系统包括当前状态在内的前三个时刻的状态; D. 与系统包括当前状态在内的前两个时刻的状态",
+    "answer": "B"
+  },
+  {
+    "id": 42,
+    "question": "下面哪一个选项不是模型已知马尔可夫决策过程的元素之一？",
+    "options": "A. S：有限状态空间; B. A：有限动作空间; C. Q：动作策略概率函数; D. P：状态转移概率矩阵",
+    "answer": "C"
+  },
+  {
+    "id": 43,
+    "question": "下面关于Dijkstra算法具体工作流程错误的是？",
+    "options": "A. 每个节点用从源节点沿已知最佳路径到该节点的距离来标注，标注分为临时性标注和永久性标注; B. 初始时，所有节点都为临时性标注，标注为0; C. 将源节点标注为0，且为永久性标注，并令其为工作节点; D. 检查与工作节点相邻的临时性节点，若该节点到工作节点的距离与工作节点的标注之和小于该节点的标注，则用新计算得到的和重新标注该节点",
+    "answer": "B"
+  },
+  {
+    "id": 44,
+    "question": "下面关于Q学习与强化学习方法描述错误的是？",
+    "options": "A. Q学习是强化学习的主要算法之一，是一种无模型的学习方法，它提供智能系统在马尔可夫环境中利用经历的动作序列选择最优动作的一种学习能力; B. 强化学习是一种不同于监督学习和无监督学习的在线学习技术，它把学习看作是一个“试探一评价”的过程; C. Q学习通过直接优化动作价值函数（Q函数）来学习最优策略，而不需要环境模型（如状态转移概率）; D. 强化学系统根据强化信号和环境的当前状态再选择下一个动作，选择的原则是使受到再励的概率减少",
+    "answer": "D"
+  },
+  {
+    "id": 45,
+    "question": "指纹定位分为哪两个阶段？",
+    "options": "A. 离线阶段与在线阶段; B. 离线阶段与工作模型; C. 训练阶段与工作模型; D. 训练模型与在线模型",
+    "answer": "A"
+  },
+  {
+    "id": 46,
+    "question": "采用指纹定位法进行无线定位时，采集的特征数据称为？",
+    "options": "A. 定位数据; B. 指纹数据; C. 强度数据; D. 距离数据",
+    "answer": "B"
+  },
+  {
+    "id": 47,
+    "question": "如下图在池化层中，使用2×2的窗口做最大化池化操作，则池化后输出矩阵中A，B，C，D的值分别为多少？",
+    "options": "A. 6、8、3、4; B. 1、2、1、1; C. 3.25、5.25、2、2; D. 1、2、3、4",
+    "answer": "A"
+  },
+  {
+    "id": 48,
+    "question": "在强化学习或网络自适应流媒体的上下文中，环境通常代表系统状态，而智能体根据环境状态做出决策。下列选项中哪个不是环境输出的信息？",
+    "options": "A. 视频块大小; B. 下载时延; C. 缓冲区大小; D. 视频平滑度",
+    "answer": "D"
+  },
+  {
+    "id": 49,
+    "question": "在A3C模型中，下列选项中哪个不是学习代理发送给中央代理的信息？",
+    "options": "A. 状态; B. 动作; C. 转移概率; D. 奖励",
+    "answer": "C"
+  },
+  {
+    "id": 50,
+    "question": "下面关于高斯混合聚类算法与K-means算法的不同点错误的是？",
+    "options": "A. K-means假设数据点是均匀分布的，高斯混合聚类算法假设数据点是高斯分布的; B. K-means只能得到分类结果，高斯混合聚类算法采用概率模型，可以得到分类概率; C. K-means往往只能收敛于局部最优，高斯混合聚类算法往往可以收敛于全局最优; D. K-means算法简单收敛快，高斯混合聚类算法较复杂",
+    "answer": "C"
+  },
+  {
+    "id": 51,
+    "question": "下面关于高斯混合聚类描述错误的是？",
+    "options": "A. 高斯混合聚类算法使用概率模型进行分类; B. 高斯混合聚类是一种“硬聚类”算法; C. 高斯混合聚类算法不仅可以用在分类，还可以用在密度估计上; D. 高斯混合聚类算法往往可以得到闭式解",
+    "answer": "B"
+  },
+  {
+    "id": 52,
+    "question": "逻辑回归可以用以下哪一种方法来调整数据？",
+    "options": "A. 最小二乘法; B. 欧式距离; C. 杰卡德距离; D. 最大似然估计",
+    "answer": "D"
+  },
+  {
+    "id": 53,
+    "question": "在A3C实例中，状态特征不包含以下哪个特征？",
+    "options": "A. cart的位置; B. cart的速度; C. pole的加速度; D. pole的角度",
+    "answer": "C"
+  },
+  {
+    "id": 54,
+    "question": "下列哪个选项不是A3C算法相对Actor-Critic算法优化的内容？",
+    "options": "A. 异步训练框架; B. 网络结构优化; C. Critic评估点的优化; D. 迭代次数的优化",
+    "answer": "D"
+  },
+  {
+    "id": 55,
+    "question": "下面关于PCA算法的理解错误的是？",
+    "options": "A. 求出变量协方差矩阵的特征值及对应的特征向量，将特征向量按对应特征值大小从上到下按行排列成矩阵，取前k行即为所需要的k维特征; B. 可以任意的对需要降低到的维度数进行选择; C. 主成分分析是一种通过降维技术把多个变量化为少数几个主成分（综合变量）的统计分析方法。这些主成分能够反映原始变量的绝大部分信息，为了使这些主成分所含的信息不互相重叠，应要求他们之间互不相关; D. 主成分分析是最重要的降维方法之一。在数据压缩消除冗余和数据噪音消除等领域都有广泛的应用",
+    "answer": "B"
+  },
+  {
+    "id": 56,
+    "question": "下面关于降维算法得到的结果描述错误的是？",
+    "options": "A. 使得数据集更易使用; B. 降低算法的计算开销; C. 增加噪声; D. 使得结果容易理解",
+    "answer": "C"
+  },
+  {
+    "id": 57,
+    "question": "下面关于约束种子K均值算法描述错误的是？",
+    "options": "A. K均值算法是一种无监督学习算法; B. 约束种子K均值算法是一种半监督学习算法; C. 约束种子K均值算法利用了少量带标记的样本优化了K均值算法; D. 约束种子K均值算法一定可以得到最优解",
+    "answer": "D"
+  },
+  {
+    "id": 58,
+    "question": "循环神经网络核心结构是？",
+    "options": "A. 多个相同的FNN结构; B. 与FNN无差别; C. 具有记忆的预测结构; D. 单隐藏层结构",
+    "answer": "C"
+  },
+  {
+    "id": 59,
+    "question": "循环神经网络主要应用场景为？",
+    "options": "A. 人脸识别; B. 语音文字处理; C. 手势识别; D. 姿态识别",
+    "answer": "B"
+  },
+  {
+    "id": 60,
+    "question": "学习向量量化算法采用“竞争学习”的策略，这主要体现在？",
+    "options": "A. 学习向量量化算法通过找到一组原型向量来聚类; B. 对于类别不同的样本，学习向量量化算法会将它划入到不同的簇中; C. 学习向量量化算法是一种需要预设标签的学习算法，学习过程通过这些监督信息来辅助聚类; D. 学习向量量化算法通过判断样本点与原型向量的类别标记是否一致，更新原型向量",
+    "answer": "D"
+  },
+  {
+    "id": 61,
+    "question": "学习向量量化算法形成的簇划分可通过Voronoi图在二维输入平面上表示，下面关于Voronoi图说法不正确的是？",
+    "options": "A. Voronoi图由一组连续多边形组成，多边形的边界由连接的垂直平分线组成; B. Voronoi图中的任意多边形内仅含有一个点; C. Voronoi图中多边形边上的点到其两边的点距离不相等; D. Voronoi图按照最近邻原则划分平面，它上面的每一个点与它最近邻的区域关联",
+    "answer": "C"
+  },
+  {
+    "id": 62,
+    "question": "学习向量量化是一种特殊的原型聚类，它与一般原型聚类不同的地方是？",
+    "options": "A. 学习向量量化通过找到一组原型向量来刻画聚类结构; B. 学习向量量化使用带有类别标记的算法辅助聚类; C. 学习向量量化不需要迭代更新原型向量; D. 学习向量量化将数据集中的样本划分为若干个通常不相交的子集",
+    "answer": "B"
+  },
+  {
+    "id": 63,
+    "question": "当采用了合适的基学习器，下列哪项对学习器的性能影响较大？",
+    "options": "A. 损失函数非凸性; B. 模型假设; C. 有标记样本较少; D. 未标记样本较多",
+    "answer": "C"
+  },
+  {
+    "id": 64,
+    "question": "下面关于线性回归模型描述错误的是？",
+    "options": "A. 线性回归问题适用于预测连续值的情况; B. 线性回归模型总是假定输入和输出结果满足线性关系; C. 线性回归模型适用于预测离散值的情况; D. 线性回归模型分为多元线性回归和一元线性回归",
+    "answer": "C"
+  },
+  {
+    "id": 65,
+    "question": "在实现前向传播和反向传播中使用的“cache”是什么？",
+    "options": "A. 用于在训练期间缓存成本函数的中间值; B. 用于传递前向传播中计算的变量到相应的反向传播步骤，其包含计算导数的反向传播的有用值; C. 用于跟踪正在搜索的超参数，以加速计算; D. 用于将向后传播计算的变量传递给相应的正向传播，其包含用于计算激活的正向传播的有用值",
+    "answer": "B"
+  },
+  {
+    "id": 66,
+    "question": "神经元节点计算什么？",
+    "options": "A. 神经元节点先计算激活函数，再计算线性函数(z = Wx + b); B. 神经元节点先计算线性函数（z = Wx + b），再计算激活; C. 神经元节点计算函数g，函数g计算(Wx + b); D. 在将输出应用于激活函数之前，神经元节点计算所有特征的平均值",
+    "answer": "B"
+  },
+  {
+    "id": 67,
+    "question": "GB算法共需要M次迭代，每次迭代产生多少个模型？",
+    "options": "A. M; B. 2; C. 1; D. 0",
+    "answer": "C"
+  },
+  {
+    "id": 68,
+    "question": "决策树分为以下哪两大类？",
+    "options": "A. 回归树和分类树; B. 二叉树和回归树; C. 红黑树和回归树; D. 二叉树和分类树",
+    "answer": "A"
+  },
+  {
+    "id": 69,
+    "question": "深层神经网络结构不同于浅层神经网络的地方是？",
+    "options": "A. 输入层; B. 输出层; C. 中间层; D. 隐藏层",
+    "answer": "D"
+  },
+  {
+    "id": 70,
+    "question": "如何得到质量很好的图像编码？",
+    "options": "A. 重新采集样本; B. 样本预处理; C. 样本修复技术; D. Triplet损失函数",
+    "answer": "D"
+  },
+  {
+    "id": 71,
+    "question": "人脸识别中，难处在于？",
+    "options": "A. “一次学”问题; B. 样本复杂; C. 计算复杂; D. 神经网络结构复杂",
+    "answer": "A"
+  },
+  {
+    "id": 72,
+    "question": "在迁移学习中，以下哪种通用知识不能实现跨领域和跨任务的推广？",
+    "options": "A. 源域中可利用的样本; B. 源域模型中可利用的部分; C. 源域和目标域中不可共享的特征; D. 源域中实体之间的特定规则",
+    "answer": "C"
+  },
+  {
+    "id": 73,
+    "question": "以下关于迁移学习的分类表述错误的是？",
+    "options": "A. 基于例子的迁移学习; B. 基于特征的迁移学习; C. 基于参数的迁移学习; D. 基于关系的迁移学习",
+    "answer": "A"
+  },
+  {
+    "id": 74,
+    "question": "下面关于朴素贝叶斯算法优点描述错误的是？",
+    "options": "A. 朴素贝叶斯模型发源于古典数学理论，有稳定的分类效率; B. 适用于多分类任务，算法的复杂度低; C. 分类速度快; D. 对输入数据的表达形式不敏感（如连续/离散数据无需适配）",
+    "answer": "D"
+  },
+  {
+    "id": 75,
+    "question": "下面不属于朴素贝叶斯模型的是？",
+    "options": "A. 高斯模型; B. 多项式模型; C. 拉普拉斯模型; D. 伯努利模型",
+    "answer": "C"
+  },
+  {
+    "id": 76,
+    "question": "K-Means算法的缺点不包括？",
+    "options": "A. K必须是事先给定的; B. 选择初始聚类中心; C. 对于“噪声”和孤立点数据是敏感的; D. 需要不断进行样本分类调整",
+    "answer": "D"
+  },
+  {
+    "id": 77,
+    "question": "K-Means聚类中K值选取的方法是？",
+    "options": "A. 密度分类法; B. 手肘法; C. 大腿法; D. 随机选取",
+    "answer": "B"
+  },
+  {
+    "id": 78,
+    "question": "Softmax算法中各个动作概率的分配基于哪种分布？",
+    "options": "A. 玻尔兹曼; B. 泊松; C. 费米; D. 正态",
+    "answer": "A"
+  },
+  {
+    "id": 79,
+    "question": "在强化学习中，机器要做的是在环境中不断尝试而学得一个？",
+    "options": "A. “奖赏”; B. “动作”; C. “策略”; D. “累计奖赏”",
+    "answer": "C"
+  },
+  {
+    "id": 80,
+    "question": "Q学习算法在当前状态如何选择下一步动作？",
+    "options": "A. 随机选择; B. 根据回报值(reward)选择; C. 根据上一个状态选择; D. 根据上一个动作选择",
+    "answer": "B"
+  },
+  {
+    "id": 81,
+    "question": "在Pensieve模型中，视频QoE定义不包含以下哪个参数？",
+    "options": "A. 码率大小; B. 卡顿; C. 码率平滑性; D. 缓冲区大小",
+    "answer": "D"
+  },
+  {
+    "id": 82,
+    "question": "下列哪个选项不是Pensieve算法模型的输入？",
+    "options": "A. 每个片段的平均码率; B. 下一个请求片段的码率; C. 下载每个片段所花的时间; D. 剩余未下载的片段数量",
+    "answer": "B"
+  },
+  {
+    "id": 83,
+    "question": "下面关于LSTM的前向计算描述正确的是？",
+    "options": "A. 输入门决定了上一时刻的单元状态c_t-1有多少保留到当前时刻 c_t; B. 输出门决定了当前时刻网络的输入x_t有多少保存到单元状态c_t; C. 遗忘门控制单元状态c_t有多少输出到LSTM的当前输出值h_t; D. 门实际上就是一层全连接层，输入是一个向量,输出是一个0-1之间的实数向量",
+    "answer": "D"
+  },
+  {
+    "id": 84,
+    "question": "下面关于RNN和LSTM描述错误的是？",
+    "options": "A. RNN能处理序列数据，并且有记忆能力，能够利用上文信息; B. RNN对于获取长距离依赖的效果不是很好，难于训练; C. RNN长距离依赖处理效果不佳的原因是使用sigmoid函数作为激活函数; D. LSTM的核心是细胞状态——最上层的横穿整个细胞的水平线，它通过门来控制信息的增加或者删除",
+    "answer": "C"
+  },
+  {
+    "id": 85,
+    "question": "K均值聚类算法中K的含义是？",
+    "options": "A. 算法迭代K次; B. 均值是K; C. K个簇; D. 无特殊含义",
+    "answer": "C"
+  },
+  {
+    "id": 86,
+    "question": "Adaboost算法在迭代过程中哪个参数不会改变？",
+    "options": "A. 样本的权重; B. 弱分类器的权值; C. 样本集; D. 弱分类器的误差率",
+    "answer": "C"
+  },
+  {
+    "id": 87,
+    "question": "下面关于Adaboost算法描述错误的是？",
+    "options": "A. Adaboost算法是集成学习方法boosting的改进方法; B. 在Adaboost算法的迭代过程中，分类正确的样本的权重会增加; C. Adaboost算法的最终目的是将训练的弱分类器集合起来，构建一个强分类器; D. 每次迭代都会选出一个最优的弱分类器",
+    "answer": "B"
+  },
+  {
+    "id": 88,
+    "question": "在模型评估中，主要用于衡量分类任务性能的指标是？",
+    "options": "A. 平均绝对误差; B. 均方误差; C. 准确率; D. R方值",
+    "answer": "C"
+  },
+  {
+    "id": 89,
+    "question": "公共部分的网络模型是要学习的模型，而线程里的网络模型主要是用于和环境交互使用的，这些线程里的模型可以帮助线程更好的和环境交互，拿到高质量的数据帮助模型更快收敛。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 90,
+    "question": "A3C算法的思路是利用多线程的方法，同时在多个线程里面分别和环境进行交互学习，每个线程都把学习的成果汇总起来，用来更新全局网络。同时线程定期把从全局网络提取参数，指导自己和环境后面的学习交互。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 91,
+    "question": "逻辑回归使用梯度上升法求解系数参数的极值。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 92,
+    "question": "逻辑回归是有监督学习的算法。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 93,
+    "question": "逻辑回归只能用来做回归。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 94,
+    "question": "高斯混合聚类算法在EM算法过程中，使用极大似然估计函数，进行对各参数的更新，从而进行不断迭代，使算法达到收敛效果。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 95,
+    "question": "高斯混合算法使用了高斯混合模型和EM算法，得到的不仅仅是分类结果，还包含分类概率。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 96,
+    "question": "高斯混合算法分类簇的划分是样本对应的先验概率的最大值决定的。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 97,
+    "question": "在训练过程中，为了提高训练速度，采用A3C算法，使用并行的agent，同时进行训练，每个agent将训练的参数提交给中央网络，中央网络将收集到的参数信息进行参数更新，同时，每经过一段时间，每个agent从中央网络获取已经更新的参数，再与环境进行互动。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 98,
+    "question": "CNN的一个优势就是卷积核参数共享，通过卷积核在数据矩阵的逐一扫描实现多个局部特征的组合，而卷积核中的参数则通过数据训练反馈得到的。权值共享加快了模型训练的速度，但是增加了对运算的要求。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 99,
+    "question": "卷积神经网络的输入层可以处理多维数据，常见地，一维卷积神经网络的输入层接收一维或二维数组，其中一维数组通常为时间或频谱采样；二维数组可能包含多个通道；二维卷积神经网络的输入层接收二维或三维数组；三维卷积神经网络的输入层接收四维数组。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 100,
+    "question": "一个强化学习只有一个最优策略，实验的结果人人相同。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 101,
+    "question": "强化学习中的基于T步积累算法需要输入大量的数据集，数据集越多训练出的模型就越精确。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 102,
+    "question": "经验回放是深度Q学习的最重要的一个技巧。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 103,
+    "question": "深度Q学习能对从未见过的状态进行Q值的准确猜测。",
+    "options": "A. 正确; B. 错误",
+    "answer": "A"
+  },
+  {
+    "id": 104,
+    "question": "深度Q学习是监督学习。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  },
+  {
+    "id": 105,
+    "question": "自编码器、卷积神经网络、循环神经网络和支持向量机都属于深度学习算法。",
+    "options": "A. 正确; B. 错误",
+    "answer": "B"
+  }
+],
+          P4专项题库: [
+  {"id":1,"question":"P4是一种开源的、特定于域的编程语言，专为编程可重构网络而设计。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":2,"question":"P4只支持可编程芯片。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":3,"question":"P4为用户开放了控制平面的编程能力，使得网络中所有的设备真正地可编程化。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":4,"question":"P4语言是类似Python一样的计算机高级语言。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":5,"question":"P4能够解决OpenFlow编程能力不足以及其设计本身所带来的可拓展性差的难题。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":6,"question":"P4基于PISA模型来进行数据平面的编程。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":7,"question":"P4就是OpenFlow2.0，可以完全取代OpenFlow。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":8,"question":"Barefoot Tofino交换芯片是业内第一个支持PISA架构的以太网交换ASIC。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":9,"question":"P4通过数据平面可编程动态配置设备，使网络控制权真正到了最终用户手中。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":10,"question":"P4程序不支持循环解析。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":11,"question":"用户可以使用P4语言描述任何网络数据平面协议和数据包处理行为。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":12,"question":"在P4交换机中一条流水线必须包含解析器/逆解析器、匹配-动作表和元数据总线。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":13,"question":"P4交换机中将流水线处理数据的过程进行抽象和重定义，数据处理单元对数据的处理抽象成解析器。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":14,"question":"P4程序中有5个语言组件：首部、解析器、表、动作和流控制程序。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":15,"question":"bmv2是支持P4编程的软件交换机。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":16,"question":"下列属性中不属于P4特性的是（  ）。","options":["A. 协议无关","B. 目标无关","C. 集中控制","D. 可重构性"],"answer":"C"},
+  {"id":17,"question":"在P4交换机的流水线结构中，以下哪个组件是必须的（  ）。","options":["A. 解析器","B. 逆解析器","C. 匹配动作","D. 元数据总线"],"answer":"D"},
+  {"id":18,"question":"下面关于P4带来的好处不包括（  ）。","options":["A. P4使新协议的部署更加简单，消耗的时间更少","B. P4程序可以由用户编写，因此有助于保留新IP的所有权","C. P4中控制平面和数据平面之间的通信方式灵活，支持生成新数据包","D. P4是可编程网络设备的开源语言，易于移植"],"answer":"C"},
+  {"id":19,"question":"关于协议无关交换机架构PISA的描述，以下哪个说法是错误的（  ）。","options":["A. PISA是一种支持P4数据面可编程包处理的流水线引擎架构","B. PISA用户可以自行编程网络，但其性能可能会降低","C. PISA体系结构把数据平面全部控制权都交给网络所有者","D. PISA确定了一个用于处理数据包的小的原始指令集，以及一个非常统一的可编程流水线，用以快速连续地处理数据包头"],"answer":"B"},
+  {"id":20,"question":"PISA架构的交换机中，以下哪个组件用于将分组数据转化成元数据（  ）。","options":["A. 解析器","B. 逆解析器","C. 匹配动作","D. 元数据总线"],"answer":"A"},
+  {"id":21,"question":"PISA架构的交换机中，以下哪个组件用于在流水线内存储数据信息（  ）。","options":["A. 解析器","B. 逆解析器","C. 匹配动作","D. 元数据总线"],"answer":"D"},
+  {"id":22,"question":"PISA架构的交换机中，以下哪个组件用于将元数据转化成序列化的分组数据（  ）。","options":["A. 解析器","B. 逆解析器","C. 匹配-动作表","D. 元数据总线"],"answer":"B"},
+  {"id":23,"question":"关于P4的描述，以下哪个选项是错误的（  ）。","options":["A. P4不仅可以实现数据平面的编程，也可以实现网络控制平面编程","B. P4可以帮助网络拥有者实现最适合其自身需求的具体网络行为","C. P4能够解决OpenFlow编程能力不足以及其设计本身所带来的可拓展性差的难题","D. P4让网络拥有者可以自上而下地定义数据包的完整处理流程"],"answer":"A"},
+  {"id":24,"question":"对于任何所需要的网络数据平面协议和数据包处理行为，程序员都可以使用P4进行表达，这体现了P4的哪个特性（  ）。","options":["A. 协议无关","B. 目标无关","C. 集中控制","D. 可重构性"],"answer":"A"},
+  {"id":25,"question":"下列关于P4语言的定位描述不正确的是（  ）。","options":["A. 协议无关性","B. 目标无关性","C. 统一南向接口","D. 现场可重配置能力"],"answer":"C"},
+  {"id":26,"question":"以下关于P4的说法错误的是（  ）。","options":["A. P4支持可编程的解析器来自定义新的头部","B. P4的匹配动作表可以并行或者顺序执行","C. P4的动作可以是由交换机所支持的协议无关原动作组成的复合动作","D. P4将使OpenFlow很快过时"],"answer":"D"},
+  {"id":27,"question":"以下哪个选项不是P4程序的组件（  ）。","options":["A. 包头","B. 解析器","C. 优先级","D. 动作"],"answer":"C"},
+  {"id":28,"question":"在P4中，（  ）用来描述数据包头部和元数据如何被处理。","options":["A. Header","B. Table","C. Action","D. Control Flow"],"answer":"C"},
+  {"id":29,"question":"在P4中，（  ）的内容决定数据包后续的操作。","options":["A. 头部","B. 表","C. 动作","D. 控制流"],"answer":"A"},
+  {"id":30,"question":"在P4程序中，（  ）决定了“匹配-动作”表处理数据包的顺序。","options":["A. 解析器","B. 表","C. 动作","D. 控制程序"],"answer":"D"}
+],
+          云计算专项: [
+  {"id":1,"question":"关于OpenStack的网络、子网、端口的描述，不正确的是（）。","options":["A. 网络（network）是一个隔离的二层广播域","B. 子网（subnet）是一个IPv4或者IPv6地址段","C. 端口（port）是用于TCP通信的Socket接口","D. 子网和端口必须始终与网络相关联"],"answer":"C"},
+  {"id":2,"question":"网络虚拟化不包括以下哪一项（）。","options":["A. 网络设备虚拟化","B. 网络功能虚拟化","C. 终端虚拟化","D. 链路虚拟化"],"answer":"C"},
+  {"id":3,"question":"关于虚拟网络，下列说法错误的是（）。","options":["A. 虚拟网络也是网络","B. 虚拟网络是虚拟机之间的网络，虚拟网络和物理网络没有关系","C. 和物理网络一样，虚拟网络包括网络拓扑，如网络节点、链接、网络节点中的查询表等要素","D. 虚拟交换机是软件实现的交换机，其使用和部署起来比物理交换机更加灵活方便"],"answer":"B"},
+  {"id":4,"question":"关于云计算的弹性机制，下列说法正确的是（）。","options":["A. 云计算的本质是实现从资源到架构的全面弹性","B. 资源层面的弹性包括计算、网络、存储资源的弹性，是指用户可以随时随地根据自身需求获取相应的计算、网络、存储资源","C. 架构方面的弹性是指云平台本身的架构易于扩展和维护","D. 以上都是"],"answer":"D"},
+  {"id":5,"question":"关于KVM，下列说法错误的是（）。","options":["A. KVM（Kernel‑based Virtual Machine）是一个基于Linux内核的虚拟化技术","B. KVM是x86架构且硬件支持虚拟化技术（如intel VT或AMD‑V）的Linux全虚拟化解决方案","C. KVM集成于Linux内核中，可以直接提供虚拟机上层控制界面","D. KVM能在不改变Linux或Windows镜像的情况下同时运行多个虚拟机"],"answer":"C"},
+  {"id":6,"question":"下列哪个特性不是虚拟化的主要特征（）。","options":["A. 高扩展性","B. 高可用性","C. 高安全性","D. 实现技术简单"],"answer":"D"},
+  {"id":7,"question":"“如果一个虚拟机因为错误而崩溃，同一主机上的其他虚拟机不会受到影响”体现了虚拟机的什么特性？（）。","options":["A. 隔离性","B. 兼容性","C. 独立于硬件","D. 统一性"],"answer":"A"},
+  {"id":8,"question":"云计算体系结构的（）负责资源管理、任务管理、用户管理和安全管理等工作。","options":["A. 物理资源层","B. 资源池层","C. 管理中间件层","D. SOA构建层"],"answer":"C"},
+  {"id":9,"question":"云计算是对（）技术的发展与运用。","options":["A. 并行计算","B. 网格计算","C. 分布式计算","D. 以上都是"],"answer":"D"},
+  {"id":10,"question":"以下不属于云存储的主要技术路线的是（）。","options":["A. 对象存储","B. 存储虚拟化","C. 高性能磁带存储","D. 软件定义分布式存储"],"answer":"C"},
+  {"id":11,"question":"从研究现状上看，下面不属于云计算特点的是（）。","options":["A. 超大规模","B. 虚拟化","C. 私有化","D. 高可靠性"],"answer":"C"},
+  {"id":12,"question":"云计算主要解决的传统网络下的痛点包括（）。","options":["A. 平均资源利用率及能耗效率低下","B. 新业务上线测试周期长","C. 企业希望从其主机托管运营商那里灵活地按需获取计算、存储和网络资源","D. 以上都是"],"answer":"D"},
+  {"id":13,"question":"在云计算中，虚拟层主要包括（）。","options":["A. 服务器虚拟化","B. 存储虚拟化","C. 网络虚拟化","D. 以上都是"],"answer":"D"},
+  {"id":14,"question":"IaaS计算实现机制中，系统管理模块的核心功能是（）。","options":["A. 负载均衡","B. 监视节点的运行状态","C. 应用API","D. 节点环境配置"],"answer":"A"},
+  {"id":15,"question":"下列关于云计算的说法错误的是（）。","options":["A. 云计算是基于互联网的相关服务的增加、使用和交付模式","B. 云计算不针对特定的应用，在“云”的支撑下可以构造出千变万化的应用","C. 云计算支持用户在任意位置，使用各种终端获取应用服务","D. 云计算通常指大规模的计算资源管理系统，天河一号超算就是云计算的典型应用"],"answer":"D"},
+  {"id":16,"question":"虚拟机迁移是指将虚拟机从一个节点迁移到另一个节点，或者从一个数据中心迁移到另一个数据中心，迁移前后虚拟机的IP地址和提供的服务不变。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":17,"question":"VxLAN技术并不能解决大L2网络里MAC表容量限制虚拟机的数量的问题。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":18,"question":"云计算是由一系列可以动态升级和虚拟化的资源所组成的，这些资源被所有云计算的用户共享并且可以方便地通过网络访问，用户无须掌握云计算的技术，只需要按照个人或团体的需要租赁云计算的资源。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":19,"question":"微服务架构是一项在云中部署应用和服务的新技术，它旨在通过将功能分解到各个离散的服务中以实现对解决方案的解耦。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":20,"question":"在Kubernetes中pod的存在可以让紧密连接的几个容器之间共享IP地址和存储资源。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":21,"question":"Docker和虚拟机一样，每个Docker也需要安装独立的客户机操作系统以实现操作的隔离。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":22,"question":"Nova是OpenStack的重要模块，OpenStack云实例生命周期所需的各种动作都需要Nova进行处理和支撑。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":23,"question":"OpenStack中，Horizon服务以Web形式对所有节点上的服务进行管理，通常把该服务称为DashBoard。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":24,"question":"在数据中心中，南北向流量一般指数据中心之间的流量。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":25,"question":"Linux bridge本质上也是一个虚拟交换机，它可以实现和物理交换机类似的功能。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":26,"question":"OVS是开源的虚拟交换机，它可以实现跨主机之间的虚拟机通信。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":27,"question":"虚拟网卡和虚拟交换机之间的链路叫做虚拟的链路，不同虚拟机之间通过虚拟链路组成的网络叫做虚拟网络。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":28,"question":"一个二层网络下最多可以有1024个VLAN。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":29,"question":"Overlay网络也是一个网络，它可以脱离Underlay网络单独部署。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":30,"question":"物理网络常常称为Overlay Network，虚拟网络常常称为Underlay Network。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":31,"question":"网桥可以实现不同网络间数据帧的存储和转发，是一种在网络层进行协议转换的设备。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":32,"question":"KVM是最底层的Hypervisor，它可以直接向用户提供虚拟机的操作接口。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":33,"question":"全虚拟化技术中，VMM在guest操作系统和裸硬件之间用于工作协调，一些受保护指令必须由Hypervisor（VMM虚拟机管理程序）来捕获处理。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":34,"question":"通过虚拟化技术实现的虚拟机一般被称之为GuestOS（客户），而作为GuestOS载体的物理主机称之为HostOS（宿主）。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":35,"question":"虚拟机是20世纪50年代由IBM最先研制出来的。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":36,"question":"JVM是一种全虚拟化技术。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":37,"question":"SaaS是一种基于互联网提供软件服务的应用模式。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":38,"question":"并行计算是指同时使用多种计算资源解决计算问题的过程，其主要目的是快速解决大型且复杂的计算问题。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":39,"question":"“云”使用了数据多副本容错，比本地计算机可靠。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":40,"question":"Overlay和Underlay网络只是在概念上有所区别，实际采用的网络技术是一样的。","options":["A. 正确","B. 错误"],"answer":"B"},
+  {"id":41,"question":"虚拟化技术包括计算、存储和网络的虚拟化，是云计算的基础。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":42,"question":"云存储是一种网上在线存储的模式，即把数据存放在通常由第三方托管的多台虚拟服务器上，而非专属的服务器上。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":43,"question":"基于微服务架构设计的目的在于有效的拆分应用，实现敏捷开发和部署。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":44,"question":"Docker是比KVM更轻量级的虚拟化技术，Docker使Linux容器技术的应用更加简单和标准化。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":45,"question":"OpenStack是由控制节点、计算节点、网络节点和存储节点四大部分组成。","options":["A. 正确","B. 错误"],"answer":"A"},
+  {"id":46,"question":"以下Docker命令的解释错误的是（）。","options":["A. docker ps命令用于查看主机中的容器信息","B. docker start命令用于启动指定的容器","C. docker stop命令用于停止指定的容器","D. docker del命令用于删除指定的容器"],"answer":"D"},
+  {"id":47,"question":"关于Kubernetes的核心概念，下列说法不正确的是（）。","options":["A. 集群（cluster）是一组节点（node），这些节点可以是服务器或者虚拟机","B. 一个节点上可以运行2个pod，每个pod中包含一组容器","C. 多个pod可以通过一个server对外提供服务，service对后端pod进行负载均衡","D. Kubernetes Master是集群的管理节点，负责管理集群，提供集群的资源数据访问入口"],"answer":"B"},
+  {"id":48,"question":"关于Kubernetes的描述，下列说法正确的是（）。","options":["A. 它是一个全新的基于容器技术的分布式架构领先方案","B. 它能为容器化的应用提供部署运行、资源调度、服务发现和动态伸缩等一系列功能","C. 它具有完备的集群管理能力，内建智能负载均衡器，具有强大的故障发现和自我修复能力、可扩展的资源自动调度机制以及多粒度的资源配额管理能力","D. 以上都对"],"answer":"D"},
+  {"id":49,"question":"以下关于服务器集群的说法，错误的是（）。","options":["A. 就是将多台服务器组成一个资源池，共同对外提供某种服务","B. 集群相比单服务器架构更加易于维护","C. 集群中由于一些节点需要在异常发生时接管另外一些节点的业务，因此配置上需要预留一定的空闲资源","D. 集群可以应对服务器故障引起的业务中断问题"],"answer":"B"},
+  {"id":50,"question":"以下Docker命令的解释错误的是（）。","options":["A. docker enter命令用于进入指定的容器","B. exit命令用于退出当前容器","C. docker images命令查看镜像信息","D. docker kill命令用于杀死指定的Docker进程"],"answer":"A"},
+  {"id":51,"question":"关于Docker核心概念的描述，下列说法错误的是（）。","options":["A. Docker文件系统（FileSystem）和宿主机是共用的，它们的文件相互可见","B. 镜像（Image）就是一堆只读层（read‑only layer）的统一视角，一个镜像可以创建多个容器","C. 仓库（repository）是一个存放镜像文件的场所，仓库注册服务器上往往存在多个仓库，每个仓库中又包含多个镜像，每个镜像有不同的标签（tag）","D. 容器（Container）是从镜像创建出来的运行实例，容器可以被启动、停止和删除"],"answer":"A"},
+  {"id":52,"question":"关于Docker，以下说法错误的是（）。","options":["A. Docker是一款开源软件，是基于GO语言实现的，遵从Apache2.0协议","B. Docker的目标是实现轻量级的操作系统虚拟化的解决方案","C. Docker的基础是Linux容器（LXC）技术","D. 从实现技术上来说，Docker和KVM没有本质区别"],"answer":"D"},
+  {"id":53,"question":"以下关于OpenStack Horizon的描述，错误的是（）。","options":["A. 提供创建实例、查看终端日志、VNC连接、添加卷等实例管理功能","B. 提供系统负载均衡配置功能","C. 提供上传、编辑、删除镜像功能","D. 提供用户管理、配额管理及项目管理功能"],"answer":"B"},
+  {"id":54,"question":"关于OpenStack节点的作用，下列说法不正确的是（）。","options":["A. 控制节点负责对其余节点的控制，包括虚拟机的创建、迁移、资源分配等","B. 计算节点负责对整个系统的资源消耗情况进行计算","C. 网络节点负责管理系统的网络资源","D. 存储节点负责管理系统的存储资源"],"answer":"B"},
+  {"id":55,"question":"关于虚拟化技术实现方式，下列说法错误的是（）。","options":["A. 完全虚拟化技术又叫硬件辅助虚拟化技术，它能让任何一款操作系统不用改动就能安装到虚拟服务器上","B. 半虚拟化也叫准虚拟化，它需要把客户操作系统进行相应的修改","C. Hypervisor是工作于虚拟机（VM）和硬件之间的一个软件层，完全虚拟化技术中不需要Hypervisor","D. Intel VT是一种硬件虚拟化技术"],"answer":"C"},
+  {"id":56,"question":"云计算的主流虚拟化技术不包括（）。","options":["A. Microsoft Hyper‑V","B. Apple OSX‑server","C. Vmware ESX","D. Citrix XenServer"],"answer":"B"},
+  {"id":57,"question":"一个有10块硬盘组成的Raid1阵列最多可以允许（）块硬盘出现故障而不影响其数据的完整性。","options":["A. 1块","B. 2块","C. 4块","D. 5块"],"answer":"D"},
+  {"id":58,"question":"服务器虚拟化的主要作用是（）。","options":["A. 可以节省资金，节省服务器的采购成本和运营成本","B. 可以减轻管理人员负担，维护的设备数量变少了","C. 可以提高效率，原来的多台服务器和大量网络/存储资源利用率低，成本高，整合成虚拟服务器后大大提高了设备资源的利用率","D. 以上都是"],"answer":"D"},
+  {"id":59,"question":"以下哪项是对虚拟机的最佳描述？（）。","options":["A. 执行虚拟化软件测试程序的物理机","B. 通过软件实施的计算机，可以像物理机一样执行程序","C. 一种旨在提供网络故障切换和故障恢复功能的计算机工具","D. 一种软件计算机，其中封装了物理硬件"],"answer":"B"},
+  {"id":60,"question":"将基础设施作为服务的云计算服务类型是（）。","options":["A. IaaS","B. PaaS","C. SaaS","D. 以上都不是"],"answer":"A"},
+  {"id":61,"question":"关于OpenStack下列说法正确的是（）。","options":["A. OpenStack是一个由NASA（美国国家航空航天局）和Rackspace合作研发并发起的开源项目","B. OpenStack是一个云计算管理平台项目，它可以提供基础设施即服务（IaaS）的解决方案","C. OpenStack的核心组件包括Nova、Swift、Glance、Keystone、Neutron等","D. 以上说法都对"],"answer":"D"},
+  {"id":62,"question":"亚马逊AWS提供的云计算服务类型是（）。","options":["A. IaaS","B. PaaS","C. SaaS","D. 以上都是"],"answer":"D"},
+  {"id":63,"question":"随着云计算的发展，云网络也迎来了新的安全问题，以下哪项不属于云安全的技术（）。","options":["A. vFW、vIPS","B. 云杀毒中心","C. 微服务","D. 构建安全服务链"],"answer":"C"},
+  {"id":64,"question":"按提供服务的对象不同，阿里云属于以下哪种类型的云计算（）。","options":["A. 私有云","B. 企业云","C. 混合云","D. 公有云"],"answer":"D"},
+  {"id":65,"question":"关于Open vSwitch，下列说法正确的是（）。","options":["A. Open vSwitch主要包括ovs‑vswitchd、ovsdb‑server、ovs‑dpctl等模块","B. ovs‑vsctl命令主要用来查询和更新ovs‑vswitchd的配置","C. ovs‑ofctl命令主要用来查询和管理流表","D. 以上都是"],"answer":"D"},
+  {"id":66,"question":"下列关于云安全的说法正确的是（）。","options":["A. 云厂商通常会在云数据中心部署专业的安全设备，因此云用户不用担心使用安全的问题","B. 云安全也存在道高一尺魔高一丈的现象，因此解决云安全问题不是一朝一夕的事情","C. 云安全和和传统网络安全没有任何区别","D. 以上说法都对"],"answer":"B"},
+  {"id":67,"question":"关于云计算说法错误的是（）。","options":["A. 云计算是基于互联网的相关服务的增加、使用和交付模式","B. 云计算不针对特定的应用，在“云”的支撑下可以构造出千变万化的应用","C. 云计算支持用户在任意位置，使用各种终端获取应用服务","D. 云计算通常涉及通过互联网来提供静态难扩展且是实体化的资源"],"answer":"D"},
+  {"id":68,"question":"以下不属于公有云的是（）。","options":["A. 亚马逊云AWS","B. 微软Windows Azure","C. 阿里云","D. 政务云"],"answer":"D"},
+  {"id":69,"question":"关于Kubernetes优势，下列说法错误的是（）。","options":["A. 它是一个轻量级的容器编排和管理系统","B. 它是一款开源虚拟化管理平台","C. 它目前只能用于Docker容器的编排和管理","D. 它的架构决定了它很容易支持业务的弹性伸缩和负载均衡"],"answer":"C"},
+  {"id":70,"question":"以下哪项不是Docker的优势（）。","options":["A. Docker容器几乎可以在任意平台运行，其良好的兼容性和轻量特性，可以轻松地实现负载的动态管理","B. Docker的安装部署非常简单，几乎支持所有的32位和64位操作系统","C. Docker对系统的利用率很高，容器除了运行其中的应用，不会消耗额外的系统资源，使应用性能很高，开销减少","D. Docker只需要小小的修改，就可以代替大量的更新工作，所有的改动都以增量的方式被分发和更新，实现自动化高效的管理"],"answer":"B"}
+],
+          计算机网络专项: [
+  {"id":1,"question":"以下哪个选项不是SDN网络架构中的层次（）。","options":"A. 主机层; B. 控制层; C. 转发层; D. 应用层","answer":"A"},
+  {"id":2,"question":"以下哪个选项是对Traceroute作用的准确描述（）。","options":"A. 检查网络的安全性; B. 检查到目的网络的访问速度; C. 查询源端到目的端的访问路径; D. 检验路由协议邻居关系","answer":"C"},
+  {"id":3,"question":"IPv4报文头部中，以下哪个选项被Traceroute命令所利用（）。","options":"A. Version; B. Header Length; C. Identification; D. TTL","answer":"D"},
+  {"id":4,"question":"以下哪个选项可能导致网络中某源站收到时间超时的ICMP报文（）。","options":"A. 目的IP地址不可达; B. 目的网络不可达; C. ICMP报文需要丢弃; D. IP数据报分片丢失","answer":"D"},
+  {"id":5,"question":"以下哪个选项是Traceroute路由追踪时源节点发出的ICMP消息（）。","options":"A. Echo Request; B. Timestamp Request; C. Echo Reply; D. Timestamp Reply","answer":"A"},
+  {"id":6,"question":"以下哪个选项是Traceroute测试时中间节点或者目的节点返回给源节点的消息（）。","options":"A. TTL超时; B. 目的不可达; C. 源路由失败; D. 参数错误","answer":"A"},
+  {"id":7,"question":"以下哪个选项将ICMP协议当成数据部分封装并传输（）。","options":"A. 以太帧; B. IP数据包; C. TCP数据段; D. UDP数据段","answer":"B"},
+  {"id":8,"question":"以下哪个选项是PING命令测试连通性所利用的报文（）。","options":"A. ARP请求与回应报文; B. ICMP请求与响应报文; C. DNS请求报文; D. Tracert报文","answer":"B"},
+  {"id":9,"question":"关于IPv6头部字段，以下哪个选项的含义与IPv4头部的TTL类似（）。","options":"A. Traffic Class; B. Flow Label; C. Next Header; D. Hop Limit","answer":"D"},
+  {"id":10,"question":"以下哪个选项可以使得纯IPv6主机能够与纯IPv4主机通信（）。","options":"A. 多协议栈技术; B. 协议翻译技术; C. 隧道技术; D. 双协议栈技术","answer":"B"},
+  {"id":11,"question":"关于IPv6的描述中，以下哪个选项是错误的（）。","options":"A. IPv6支持基本首部和扩展首部; B. IPv6增加了Next Header，允许协议继续扩充; C. IPv6支持资源的预分配，灵活的流量标记; D. IPv6首部长度必须是4B的整数倍","answer":"D"},
+  {"id":12,"question":"以下哪个选项是IPv6中的环回地址（）。","options":"A. ::/128; B. ::1/128; C. 2000::/3; D. FE80::/10","answer":"B"},
+  {"id":13,"question":"以下哪个选项是IPv6中本地链路单播地址（）。","options":"A. ::/128; B. ::1/128; C. 2000::/3; D. FE80::/10","answer":"D"},
+  {"id":14,"question":"关于IPv6地址，以下哪个选项的描述是错误的（）。","options":"A. IPv6地址长128bit，通常采用冒号十六进制形式表示; B. 一个IPv6地址中可以有多个双冒号; C. IPv6地址中多个全零分段可简写成双冒号; D. IPv6地址各分段的前导0可以省略，后导0不可省略","answer":"B"},
+  {"id":15,"question":"关于IPv6扩展首部，以下哪个选项是每个中间路由器都需要处理的（）。","options":"A. 逐跳选项; B. 分片选项; C. 认证选项; D. 路由选项","answer":"A"},
+  {"id":16,"question":"若IPv6分组没有扩展头部，以下哪个选项将封装在IPv6基础头部之后（）。","options":"A. TCP或UDP; B. IPv4头部; C. 逐跳选项头部; D. 分片选项头部","answer":"A"},
+  {"id":17,"question":"以下哪个选项是IPv6定义的环回地址（）。","options":"A. ::/128; B. ::1/128; C. 2000::/3; D. FC00::/7","answer":"B"},
+  {"id":18,"question":"关于IPv6中任播地址的描述，以下哪个选项是错误的（）。","options":"A. 只能用于路由器; B. 可以用作目标地址; C. 可以作为源地址进行数据转发; D. 目的地代表一组主机","answer":"C"},
+  {"id":19,"question":"数据传输时会存在各种时延，以下哪个选项不是路由器转发报文时产生的时延（）。","options":"A. 路由匹配时延; B. 处理时延; C. 排队时延; D. TCP流控时延","answer":"D"},
+  {"id":20,"question":"以下哪个选项是路由器校验数据包出错后将采取的措施（）。","options":"A. 回发该数据包至源主机; B. 忽略错误并转发该数据包; C. 丢弃该数据包; D. 通告错误信息至目的主机","answer":"C"},
+  {"id":21,"question":"路由器之间运行BGP协议，当路由器接收到自身所属AS的路由时，以下哪个选项是正确的（）。","options":"A. 拒绝接收该路由; B. 将该路由传送到所属AS内; C. 将该路由传递到其他AS; D. 将该路由中的自身AS删除再传递出去","answer":"A"},
+  {"id":22,"question":"关于OSPF协议的选路，以下哪个选项的描述是正确的（）。","options":"A. 优选跳数小的路径; B. 优选跳数大的路径; C. 优选链路度量小的路径; D. 优选链路度量大的路径","answer":"C"},
+  {"id":23,"question":"以下哪个选项能够提高网络系统可扩展性（）。","options":"A. 路由配置采用静态路由; B. 使用OSPF协议，并规划网络分层架构; C. 使用RIP协议进行路由配置; D. 使用CIDR技术","answer":"B"},
+  {"id":24,"question":"网络中有两台路由器，路由器1和路由器2之间建立了BGP连接，并互相学习到了路由，假设路由器1和路由器2都使用缺省定时器。若出现路由器间链路拥塞，导致路由器1收不到路由器2的Keepalive消息，则经过以下哪个选项的时间后，路由器1认为邻居失效，并删除从路由器2学到的路由（）。","options":"A. 30; B. 90; C. 120; D. 180","answer":"D"},
+  {"id":25,"question":"以下哪个选项属于IGP且采用链路状态算法（）。","options":"A. BGP; B. OSPF; C. RIP; D. IGRP","answer":"B"},
+  {"id":26,"question":"以下哪个选项不包含在路由表中（）。","options":"A. 跳数/开销; B. 目的IP地址; C. 源IP地址; D. 路由权重","answer":"C"},
+  {"id":27,"question":"关于OSPF的特性，以下哪个选项的描述是错误的（）。","options":"A. 采用链路状态算法; B. 属于外部网关协议的一种; C. 相互之间通告链路状态信息; D. 可划分区域加快路由计算速度","answer":"B"},
+  {"id":28,"question":"以下哪个选项是距离向量路由协议所采用的核心算法（）。","options":"A. 基于AS路径长度的算法; B. 基于链路利用效率的算法; C. Dijkstra算法; D. Bellman-Ford算法","answer":"D"},
+  {"id":29,"question":"关于RIPv2路由协议与OSPF路由协议的描述中，以下哪个选项是错误的（）。","options":"A. RIPv2基于距离矢量算法，OSPF基于链路状态算法; B. RIPv2不支持MD5认证，OSPF支持MD5认证; C. RIPv2最大跳数15，OSPF没有最大跳数限制; D. RIPv2适用于小型网络，OSPF适用于大型网络","answer":"B"},
+  {"id":30,"question":"在RIP路由协议中，邻居之间每30秒进行一次路由更新，以下哪个选项中的情况出现时，可以判断与其邻居路由器的路由已经失效（）。","options":"A. 60秒仍未收到邻居的通告消息; B. 120秒仍未收到邻居的通告消息; C. 150秒仍未收到邻居的通告消息; D. 180秒仍未收到邻居的通告消息","answer":"D"},
+  {"id":31,"question":"当BGP路由网络出现故障时，以下哪个选项用于问题通告（）。","options":"A. Trap; B. Update; C. Keepalive; D. Notification","answer":"D"},
+  {"id":32,"question":"以下哪个选项是优先级最高的路由协议（）。","options":"A. 直连路由; B. 静态路由; C. 外部BGP; D. OSPF","answer":"A"},
+  {"id":33,"question":"在BGP4协议中，以下哪个选项用于响应对端发送的OPEN报文，建立邻居关系（）。","options":"A. 建立(open); B. 更新(update); C. 保持活动(keepalive); D. 通告(notification)","answer":"C"},
+  {"id":34,"question":"在BGP路由协议中，以下哪个选项用于周期性地证实与对等端的连通性（）。","options":"A. Open报文; B. Keepalive报文; C. Hello报文; D. Update报文","answer":"B"},
+  {"id":35,"question":"某组播网络中，共有10个组播成员，以下哪个选项是组播服务器需要发出的分组份数（）。","options":"A. 1; B. 6; C. 8; D. 10","answer":"A"},
+  {"id":36,"question":"以下哪个选项同时包含在TCP和UDP首部中（）。","options":"A. 开始标志SYN; B. 紧急指针; C. 目的端口; D. 窗口大小","answer":"C"},
+  {"id":37,"question":"以下哪个选项是传输层端口号的作用（）。","options":"A. 流量控制; B. 拥塞控制; C. 建立连接; D. 对应用层进程的寻址","answer":"D"},
+  {"id":38,"question":"以下哪个选项是TCP和UDP协议均支持的（）。","options":"A. 连接管理; B. 拥塞控制; C. 流量控制; D. 端口寻址","answer":"D"},
+  {"id":39,"question":"以下哪个选项是UDP首部的大小（）。","options":"A. 8B; B. 10B; C. 16B; D. 32B","answer":"A"},
+  {"id":40,"question":"主机甲向主机乙发送了一个TCP连接建立请求，主机乙给主机甲的响应报文中，以下哪个选项的标志字段是正确的（）。","options":"A. SYN=1，ACK=1，FIN=0; B. SYN=1，ACK=1，FIN=1; C. SYN=0，ACK=1，FIN=0","answer":"A"},
+  {"id":41,"question":"关于传输层的描述，以下哪个选项是错误的（）。","options":"A. 传输层位于网络层之上，并向其上层应用层提供通信服务; B. 传输层端到端的通信是应用进程之间的通信; C. 传输层具有复用和分段的功能; D. 传输层还要对收到的报文进行差错检测","answer":"C"},
+  {"id":42,"question":"关于传输层协议的描述，以下哪个选项是错误的（）。","options":"A. TCP协议提供面向连接的服务; B. TCP协议包含确认、流量控制、计时器以及连接管理等开销; C. UDP是一个无连接的非可靠传输层协议; D. UDP协议也需要进行流量控制和拥塞控制","answer":"D"},
+  {"id":43,"question":"关于传输层端口号的描述，以下哪个选项是正确的（）。","options":"A. 常见的端口号可分为服务器端口号、客户端端口号和临时端口号; B. 服务器端口号可分为熟知端口号和登记端口号; C. 服务器端口号的取值范围是[0，1023]; D. 客户端端口号的取值范围是[49152，65536]","answer":"B"},
+  {"id":44,"question":"以下哪个基于TCP协议的应用进程的端口号是正确的（）。","options":"A. TELNET：23; B. SMTP：24; C. TFTP：69; D. HTTP：8080","answer":"A"},
+  {"id":45,"question":"以下哪个基于UDP协议的应用进程的端口号是正确的（）。","options":"A. DNS：55; B. FTP：21; C. TFTP：70; D. SNMP：161","answer":"D"},
+  {"id":46,"question":"以下哪个选项是传输层熟知端口号的取值范围（）。","options":"A. [0，1023]; B. [0，1024]; C. [1，1023]; D. [1，1024]","answer":"A"},
+  {"id":47,"question":"以下哪个选项是传输层登记端口号的取值范围（）。","options":"A. [1023，49151]; B. [1024，49152]; C. [1024，49151]; D. [1023，49152]","answer":"C"},
+  {"id":48,"question":"关于UDP协议特点的描述，以下哪个选项是错误的（）。","options":"A. UDP提供无连接的服务，传输数据时不需要建立连接; B. UDP是面向报文的，报文是UDP数据报处理的最小单位; C. UDP分组首部开销小; D. UDP保证可靠交付","answer":"D"},
+  {"id":49,"question":"关于UDP首部字段的描述，以下哪个选项是错误的（）。","options":"A. 源端口号字段占2B，不需要时可置为全0; B. 目的端口号字段占2B，使用目的端口号完成报文的交付; C. UDP数据报长度字段占2B，仅包含UDP首部长度，最小值为8B; D. UDP检验和字段占2B，检测UDP数据报在传输过程中是否有错","answer":"C"},
+  {"id":50,"question":"关于UDP检验和的描述，以下哪个选项是错误的（）。","options":"A. UDP的检验和是把首部和数据部分一起都检验; B. 在计算检验和之前，要在UDP数据报之前增加长度为12B的伪首部; C. 伪首部不仅在计算时起作用，也会随着数据一起发送; D. UDP检验和的计算采用二进制反码运算求和","answer":"C"},
+  {"id":51,"question":"关于TCP协议特点的描述，以下哪个选项是错误的（）。","options":"A. TCP是面向连接的传输层协议; B. TCP提供可靠的通信方式; C. TCP不支持全双工通信; D. TCP是面向字节流的方式","answer":"C"},
+  {"id":52,"question":"关于TCP首部字段的描述，以下哪个选项是错误的（）。","options":"A. 源端口号：占2B，源计算机上传输层与应用层的服务接口; B. 目的端口号：占2B，目的计算机上传输层与应用层的服务接口; C. 序号：占4B，指的是本报文段数据部分中的第一个字节的序号; D. 确认号：占4B，指的是期望收到对方下一个报文段的最后一个数据字节的序号","answer":"D"},
+  {"id":53,"question":"关于TCP数据偏移字段的描述，以下哪个选项是错误的（）。","options":"A. 数据偏移字段也称首部长度; B. 数据偏移指的是TCP报文段数据起始处距离TCP报文段起始处的长度; C. 数据偏移字段的单位是B; D. 数据偏移字段指示的TCP最大首部长度为60B","answer":"C"},
+  {"id":54,"question":"关于TCP标志位的描述，以下哪个选项是错误的（）。","options":"A. 紧急位URG表示本报文中发送的数据是否包含紧急数据; B. TCP连接建立后所有传送的报文段都必须将确认位ACK固定置为1; C. 同步位SYN在连接建立时用来同步序号; D. 终止位FIN标记数据是否发送完毕，用来重建一个连接","answer":"D"},
+  {"id":55,"question":"关于TCP连接建立的描述，以下哪个选项错误的（）。","options":"A. TCP连接建立分为三个步骤，通常也称为三次握手; B. 第一次握手时客户端向服务器端发送连接请求报文，其标志位SYN置为1; C. 第二次握手时服务器端向客户端发送确认报文，标志位SYN和ACK均置1; D. 第三次握手时客户端向服务器端发送最后一个应答报文，其标志位FIN置为1","answer":"D"},
+  {"id":56,"question":"关于TCP连接释放的描述，以下哪个选项是错误的（）。","options":"A. 第一次挥手时客户端向服务器端发送连接释放请求报文，其标志位FIN置为1; B. 第二次挥手时服务器端向客户端发送确认报文，其标志位ACK置为1; C. 第三次挥手时服务器端向客户端发送连接释放报文，其标志位FIN和ACK均置1; D. 第四次挥手时客户端向服务器端发送确认报文，其标志位FIN置为1","answer":"D"},
+  {"id":57,"question":"关于TCP窗口的描述，以下哪个选项是错误的（）。","options":"A. TCP的滑动窗口是以字节为单位的; B. 接收窗口（receive window，rwnd）是接收方根据目前接收缓存的大小所确定的窗口值; C. 拥塞窗口（congestion window，cwnd）是发送方根据自己估计的网络拥塞程度确定的窗口值; D. 发送窗口（send window，swnd）的大小取决于接收窗口rwnd和拥塞窗口cwnd，取值为两者中较大的一个即swnd=max[rwnd,cwnd]","answer":"D"},
+  {"id":58,"question":"以下哪个选项不属于TCP拥塞控制常见算法（）。","options":"A. 慢开始算法; B. 拥塞避免算法; C. 滑动窗口算法; D. 快恢复算法","answer":"C"},
+  {"id":59,"question":"关于DNS的描述，以下哪个选项是错误的（）。","options":"A. DNS用于将主机名转换为便于机器识别的IP地址; B. DNS采用客户/服务器（C/S）模型; C. DNS运行在TCP协议之上; D. DNS使用的端口号是53","answer":"C"},
+  {"id":60,"question":"根据域名服务器服务的范围可以将域名服务器分为四种类型，以下哪个选项不属于这四种类型（）。","options":"A. 根域名服务器; B. 顶级域名服务器; C. 域域名服务器; D. 本地域名服务器","answer":"C"},
+  {"id":61,"question":"以下哪个选项不属于顶级域（）。","options":"A. 国家（地区）顶级域名; B. 通用顶级域名; C. 专用顶级域名; D. 基础结构域名","answer":"C"},
+  {"id":62,"question":"关于递归查询和迭代查询的描述，以下哪个选项是错误的（）。","options":"A. 递归查询中本地域名服务器只发送一次查询请求; B. 递归查询中任何情况下根域名服务器都可以直接返回查询结果，不需要前往其他域名服务器查询; C. 迭代查询中本地域名服务器需多次以客户机的身份发起域名查询请求; D. 迭代查询中由本地域名服务器将最终查询到的结果返回给主机","answer":"B"},
+  {"id":63,"question":"关于域名解析的描述，以下哪个选项是错误的（）。","options":"A. 将域名转换为对应IP地址的过程称为域名解析; B. 将IP地址转换为域名的过程称为反向域名解析; C. 域名解析有两种方式：递归查询和迭代查询; D. 迭代查询中本地域名服务器只发送一次DNS请求报文","answer":"D"},
+  {"id":64,"question":"关于FTP主要功能的描述，以下哪个选项是错误的（）。","options":"A. 提供不同类型主机系统之间的文件传输能力; B. 以用户权限管理的方式提供文件管理能力; C. 以匿名的方式提供公共文件共享访问能力; D. 以共享密钥的方式提供文件加密能力","answer":"D"},
+  {"id":65,"question":"以下哪个选项是FTP传输控制信息的端口（）。","options":"A. 端口20; B. 端口21; C. 端口22; D. 端口23","answer":"B"},
+  {"id":66,"question":"网络中一个FTP客户端和FTP服务器端建立起了数据连接，此时数据连接处于被动模式，以下哪个选项是服务器使用的端口号（）。","options":"A. 端口号20; B. 端口号21; C. 非知名端口号; D. 端口号53","answer":"C"},
+  {"id":67,"question":"万维网（World Wide Web，WWW）是一个大规模、分布式、联机式的信息存储空间，英文简称Web，以下哪个选项不是其核心标准（）。","options":"A. HTTP; B. HTML; C. URL; D. DHCP","answer":"D"},
+  {"id":68,"question":"统一资源定位符URL是用来表示从互联网上得到的资源位置和访问这些资源的方法。其格式为<协议>://<主机>:<端口>/<路径>，以下哪个选项是在格式中可以省略的（）。","options":"A. <协议>; B. ://; C. <主机>; D. <端口>","answer":"D"},
+  {"id":69,"question":"校园网中某个信道的最高码元传输速率为8000Baud，若码元有效离散状态为16且不考虑信噪比的情况下，以下哪个选项是正确的（）。","options":"A. 传输速率可达到8kbps; B. 传输速率可达到12kbps; C. 传输速率可达到24kbps; D. 传输速率可达到32kbps","answer":"D"},
+  {"id":70,"question":"采用PCM处理语音信号的局域网中，语音分为了512个量化级，频率为10KHz，若不考虑信噪比，以下哪个选项是正确的（）。","options":"A. 语音数据传输速率为70kbps; B. 语音数据传输速率为80kbps; C. 语音数据传输速率为90kbps; D. 语音数据传输速率为100kbps","answer":"C"},
+  {"id":71,"question":"某公司局域网中，两台主机采用异步通信，每秒传送200个字符，每个字符20位，并使用16QAM调制，以下哪个选项是正确的（）。","options":"A. 波特率是1000Baud; B. 波特率是2000Baud; C. 波特率是3000Baud; D. 波特率是4000Baud","answer":"A"},
+  {"id":72,"question":"关于信道极限容量的描述，以下哪个选项是错误的（）。","options":"A. 限制信道容量的因素主要有频率范围和信噪比; B. 信号通过信道后，其中的高频分量会加强，导致接收端收到的信号波形失去码元之间的清晰界限，这种现象称为码间串扰; C. 奈奎斯特定理用于计算无噪声信道的极限容量; D. 信噪比是指信号的平均功率S和噪声的平均功率N之比","answer":"B"},
+  {"id":73,"question":"根据奈奎斯特采样定理，为了恢复出原始信号的全部信息，以下哪个选项的描述是正确的（）。","options":"A. 采样频率需大于等于1倍的信号最高频率; B. 采样频率需大于等于2倍的信号最高频率; C. 采样频率需大于等于3倍的信号最高频率; D. 采样频率需大于等于4倍的信号最高频率","answer":"B"},
+  {"id":74,"question":"某企业网络中，传递语音数据的信道带宽为2000Hz，信噪比为20dB，以下哪个选项是正确的（）。","options":"A. 最大传输速率约为20kbps; B. 最大传输速率约为18kbps; C. 最大传输速率约为15kbps; D. 最大传输速率约为13kbps","answer":"D"},
+  {"id":75,"question":"关于传输介质的描述，以下哪个选项是错误的（）。","options":"A. 传输介质分为导引型传输介质和非导引型传输介质; B. 导引型传输介质会引导信号在固体介质中传播; C. 常见的导引型传输介质包括同轴电缆、双绞线、光纤等; D. 红外线属于导引型传输介质","answer":"D"},
+  {"id":76,"question":"关于PPP的NCP阶段的描述，以下哪个选项是错误的（）。","options":"A. 使用数据帧的协议字段值为0x0021; B. 可在该阶段获取临时IP地址; C. 若NCP阶段协商失败链路建立会终止; D. 只有认证成功之后才会进入到NCP阶段","answer":"A"},
+  {"id":77,"question":"以下哪个选项是以太网双绞线的线缆标准（）。","options":"A. 10Base-5; B. 10Base-2; C. 10BASE-T; D. 10Base-F","answer":"C"},
+  {"id":78,"question":"以下哪个选项的拓扑最适用于网络大规模扩展（）。","options":"A. 树形; B. 星形; C. 总线型; D. 环形","answer":"A"},
+  {"id":79,"question":"关于计算机网络拓扑的描述，以下哪个选项是错误的（）。","options":"A. 用拓扑学的方法，可以把计算机网络中的主机和通信设备都抽象成点; B. 拓扑结构可以反映出网络的物理连通性; C. 环形网络所有节点都连接在一个中心节点上; D. 在总线型拓扑结构中，所有计算机都串连在一条传输线路上","answer":"C"},
+  {"id":80,"question":"关于网络拓扑各类型的特点的描述，以下哪个选项是正确的（）。","options":"A. 总线型网络结构简单、易扩充、容错性强; B. 星形拓扑中心节点容易成为系统瓶颈; C. 环形拓扑传输速率高、资源共享性好、易扩充; D. 网状拓扑具有较高的可靠性，易于管理和维护","answer":"B"},
+  {"id":81,"question":"关于10GbE线缆标准的描述，以下哪个选项是错误的（）。","options":"A. 10GbE只支持全双工方式，不使用CSMA/CD协议; B. 10GbE的帧格式与10Mbps以太网的帧格式完全相同; C. 10GBASE-LR是一种支持光纤的线缆标准; D. 10GBASE-T是一种支持光纤的线缆标准","answer":"D"},
+  {"id":82,"question":"关于网卡概念的描述，以下哪个选项是错误的（）。","options":"A. 网络适配器也叫网卡; B. 网卡中的控制单元模块负责将数据帧变成比特流; C. 网卡中的线路编码器负责对帧进行编码; D. 网卡中烧录了MAC地址信息","answer":"B"},
+  {"id":83,"question":"关于局域网的数据链路层的描述，错误的是（）。","options":"A. MAC子层负责接入到传输媒体有关的内容; B. LLC子层可实现数据链路层逻辑连接的建立和释放; C. 组帧和拆帧、比特差错检测属于LLC子层的内容; D. LLC子层与传输媒体无关","answer":"C"},
+  {"id":84,"question":"关于适配器的描述，以下哪个选项是错误的（）。","options":"A. 适配器又称为网络接口卡或简称为“网卡”; B. 网卡中烧录了网卡IP地址; C. 控制单元（Control Unit，CU）负责将数据封装成数据帧; D. 线路编码器（Line Coder，LC）负责将数据帧编码为物理信号","answer":"B"},
+  {"id":85,"question":"关于以太网拓扑的描述，以下哪个选项是错误的（）。","options":"A. 星形拓扑所有节点连接到同一个中心节点，中心节点故障会导致整个网络瘫痪; B. 环形拓扑所有节点首尾相连形成环形，新增节点困难; C. 树形拓扑是一种层次化的星形结构，越下层节点的故障对网络影响越大; D. 现网环境中，一般需根据网络的实际需求设计并采用组合型网络拓扑","answer":"C"},
+  {"id":86,"question":"关于以太网概念的描述，以下哪个选项是错误的（）。","options":"A. 以太网在局域网中取得了垄断地位; B. 传统以太网的最大传输速率为10Mb/s; C. 100M以太网又叫快速以太网，在全双工方式下无需使用CSMA/CD协议; D. 在以太网交换机组网环境下需采用CSMA/CD协议","answer":"D"},
+  {"id":87,"question":"关于总线型网络的描述，以下哪个选项是错误的（）。","options":"A. 在总线型网络中所有计算机均连接到无源总线上; B. 同一时刻只能有一个计算机发送数据; C. 总线网络中的所有计算机同属一个冲突域; D. 计算机会按顺序轮流发送数据帧","answer":"D"},
+  {"id":88,"question":"关于CSMA/CD协议的描述，以下哪个选项是错误的（）。","options":"A. 主要用于总线型网络中解决冲突的问题; B. 发送之前若监听到信道空闲则发送数据帧; C. 发送之前若监听到信道忙随机延迟一段时间再检测; D. 数据帧发送过程中若检测到碰撞，则中止数据的发送","answer":"C"},
+  {"id":89,"question":"关于令牌传递协议的描述，以下哪个选项是错误的（）。","options":"A. 令牌传递协议用于令牌环网络中; B. 站点通过轮询的方式获得占用信道的权限; C. 该协议下不存在冲突问题; D. 整个令牌环网中令牌有多个","answer":"D"},
+  {"id":90,"question":"关于MAC帧结构的描述，以下哪个选项是错误的（）。","options":"A. MAC帧结构中包含目的MAC地址、源MAC地址、类型、数据和FCS校验; B. 源MAC地址长度为32bit; C. 类型字段区分不同的网络层协议; D. 数据字段的最小长度为46B","answer":"B"},
+  {"id":91,"question":"关于MAC地址的描述，以下哪个选项是错误的（）。","options":"A. 以太网数据链路层使用的是MAC地址; B. MAC地址前24bit由管理机构统一分配; C. 每块网卡的MAC地址需要用户自行配置; D. MAC地址长度为48bit","answer":"C"},
+  {"id":92,"question":"关于数据帧类型的描述，以下哪个选项是错误的（）。","options":"A. 单播帧的目的MAC地址是单播MAC地址; B. 组播帧的目的MAC地址是组播MAC地址; C. 组播帧的源MAC地址是单播MAC地址; D. 广播帧的目的MAC地址是单播MAC地址","answer":"D"},
+  {"id":93,"question":"以下哪个选项是设备可用的MAC地址（）。","options":"A. 10-AB-7A-5B-2D-CC; B. 17-AB-7A-5B-2D-CC; C. 11-AB-7A-5B-2D-CC; D. FF-FF-FF-FF-FF-FF","answer":"A"},
+  {"id":94,"question":"以下关于集线器的描述，哪个选项是错误的（）。","options":"A. 采用集线器的网络拓扑在物理结构上呈总线型; B. 采用双绞线连接时，节点到集线器的最远距离为100m; C. 多个集线器可级联扩展网络范围; D. 集线器是物理层设备","answer":"A"},
+  {"id":95,"question":"关于网桥概念的描述，以下哪个选项是错误的（）。","options":"A. 网桥工作在数据链路层; B. 网桥所有端口处于同一个冲突域; C. 网桥所有端口处于同一个广播域; D. 网桥一次只能分析处理一个数据帧","answer":"B"},
+  {"id":96,"question":"关于网桥和以太网交换机的描述，以下哪个选项是错误的（）。","options":"A. 网桥可以互连不同传输速率的网络; B. 交换机可以说是网桥的升级版本; C. 交换机的处理效率高于网桥; D. 现网环境中更建议使用网桥","answer":"D"},
+  {"id":97,"question":"现有一台24端口的百兆以太网交换机工作在全双工模式下，以下哪个选项是该交换机的总容量（）。","options":"A. 100Mbps; B. 1200Mbps; C. 2400Mbps; D. 4800Mbps","answer":"D"},
+  {"id":98,"question":"关于以太网交换机交换模式的描述，以下哪个选项是错误的（）。","options":"A. 直通交换方式中交换机只检查帧的目的MAC地址; B. 直通交换方式中交换机不进行数据缓存; C. 存储转发交换方式先缓存再查表转发到目的端口，不进行差错校验; D. 准直通转发方式中交换机在得到数据帧的前64B后才会转发","answer":"C"},
+  {"id":99,"question":"以下哪个选项不是VLAN的划分方式（）。","options":"A. 基于接口划分; B. 基于MAC地址划分; C. 基于终端设备类型划分; D. 基于IP子网划分","answer":"C"},
+  {"id":100,"question":"在基于接口划分VLAN的场景下，关于虚拟局域网接入接口和干道接口的描述，以下哪个选项是错误的（）。","options":"A. 接入接口接收终端发来的无标记以太网帧时会打上标记; B. 接入接口发送数据时直接去标签发出; C. 干道接口一般用于交换机之间互连; D. 干道接口可允许多个VLAN通过","answer":"B"},
+  {"id":101,"question":"关于滑动窗口协议的描述，以下哪个选项是错误的（）。","options":"A. 流量控制的两种实现方式包括停止-等待和滑动窗口方式; B. 选择重传SR是基于停止-等待方式的典型协议; C. 后退N帧协议是基于滑动窗口方式的协议; D. 后退N帧协议只能按序接收数据帧","answer":"B"},
+  {"id":102,"question":"关于滑动窗口概念的描述，以下哪个选项是错误的（）。","options":"A. 发送窗口用于对发送方进行流量控制; B. 接收窗口用于控制接收数据帧的范围; C. 滑动窗口协议中接收窗口大于发送窗口没有意义; D. SR协议中接收窗口大小永远为1","answer":"D"},
+  {"id":103,"question":"关于滑动窗口协议的描述，以下哪个选项是错误的（）。","options":"A. 停止-等待协议和后退N帧协议的接收窗口大小相同; B. 停止-等待协议的发送窗口可大于1; C. 后退N帧协议接收出错时需重传出错帧及之后的帧; D. SR协议接收出错时只需重传出错帧即可","answer":"B"},
+  {"id":104,"question":"关于选择重传协议的描述，以下哪个选项是错误的（）。","options":"A. 发送窗口和接收窗口均可大于1; B. 发送窗口大小Wt应满足1＜Wt≤2^(n-1); C. 不允许发送方在未收到确认时连续发送数据帧; D. 在同等条件下，选择重传协议的效率高于后退N帧协议","answer":"C"},
+  {"id":105,"question":"关于IEEE 802.11标准的描述，以下哪个选项是错误的（）。","options":"A. IEEE 802.11系列协议标准包括常见的IEEE 802.11a/b/g/n等; B. 通常我们将使用IEEE 802.11系列协议的无线局域网称为Wi-Fi; C. IEEE 802.11使用的是星形拓扑，其中心点称为接入点AC; D. IEEE 802.11标准规定无线局域网的最小构件是基本服务集（Basic Service Set，BSS）","answer":"C"},
+  {"id":107,"question":"关于网络层基本概念，以下哪个选项是错误的？","options":"A. 网络层为数据链路层提供服务; B. 网络层具备跨局域网、城域网、广域网的寻址能力; C. 网络层主要实现网络的互联; D. 网络层可以实现路由选择","answer":"A"},
+  {"id":108,"question":"关于异构网络概念的描述，以下哪个选项是错误的？","options":"A. 互联网中存在多种异构网络; B. 广域网、城域网、局域网等都属于异构网络中的一种; C. 通过交换机将多个网络互联起来构成的系统称为互联网络; D. 异构网络主要是指通信协议存在差异","answer":"C"},
+  {"id":109,"question":"关于网络拥塞的描述中，以下哪个选项是错误的？","options":"A. 网络中链路或子网分组数据过多，造成性能下降的现象称为拥塞; B. 网络拥塞是局部问题，不需要全局考虑; C. 网络拥塞可能会导致丢包; D. 可以通过拥塞控制算法解决拥塞问题","answer":"B"},
+  {"id":110,"question":"关于网络服务质量的描述，哪个选项是错误的？","options":"A. 服务质量是端到端的概念; B. 可以通过IP DSCP值来区分用户业务; C. 带宽、时延、丢包等参数是衡量服务质量的标准; D. 同一网络中，不同业务的服务质量不能一致","answer":"D"},
+  {"id":111,"question":"当前IP网络中通常采用分层路由架构，关于分层路由的概念描述，以下哪个选项是错误的？","options":"A. 分层路由架构适合更大规模的网络; B. 路由器需要知道去往所有区域的路径信息; C. 分层路由可以减少路由器中路由表的大小; D. 分层路由可以提高路由器的工作效率","answer":"B"},
+  {"id":112,"question":"关于网络层IP协议的描述，哪个选项是错误的？","options":"A. IP协议提供面向无连接的网络服务; B. IP分组数据转发不提供端到端的可靠性; C. IP分组转发简单灵活效率高; D. IP分组转发路径不能改变","answer":"D"},
+  {"id":113,"question":"关于直接交付和间接交付概念的描述，以下哪个选项是错误的？","options":"A. 同子网分组交换属于直接交付; B. 跨子网分组交换属于间接交付; C. 直接交付需要经过多个路由器; D. 间接交付需要经过路由器转发分组数据","answer":"C"},
+  {"id":114,"question":"关于IPv4地址基本概念的描述，以下哪个选项是正确的？","options":"A. IPv4地址长度共64bit; B. IPv4地址通常采用点分十进制的方式表示，每8bit进行一次划分; C. IPv4地址的最大十进制数是256; D. IPv4地址都可以用于标识主机、路由器等设备的接口","answer":"B"},
+  {"id":115,"question":"关于IPv4报文首部的描述，以下哪个选项是错误的？","options":"A. DS Field占1B，用于标识数据包的处理方式; B. 总长度字段仅包括了数据部分的长度; C. 首部长度仅包含IP首部的长度; D. 生存时间用于防止路由环路的问题","answer":"B"},
+  {"id":116,"question":"IP分组数据在有些情况下转发时需要进行分片，关于分片的描述，以下哪个选项是正确的？","options":"A. IPv4数据的分片和重组都是由路由器完成; B. DF标志位为1，说明数据包可以被分片; C. MF标志位为0，说明是分片的最后一个数据包; D. 第一个分片的片偏移量固定为MTU值","answer":"C"},
+  {"id":117,"question":"IP数据包的上层协议通过首部中的Protocol字段进行标识，关于Protocol字段的描述，以下哪个选项是正确的？","options":"A. 值为6时，表示上层为UDP; B. 值为17时，表示上层为TCP; C. 值800时，表示层为ARP; D. 值为89时，表示上层为OSPF","answer":"D"},
+  {"id":118,"question":"关于IP地址分类的描述，以下哪个选项是正确的？","options":"A. 通过首字节将IP地址分为A、B、C、D、E这几类; B. E类地址为组播地址; C. 128.1.1.1为A类IP地址; D. D类地址的范围为224.0.0.0~235.255.255.255","answer":"A"},
+  {"id":119,"question":"IP地址中有很多特殊的地址，关于特殊IP地址的描述，以下哪个选项是错误的？","options":"A. 主机位全0的是网络地址; B. 主机位全1的是直接广播地址; C. 127开头的地址是默认路由; D. 网络位全0的地址表示当前网络中的特定主机","answer":"C"},
+  {"id":120,"question":"关于IP子网掩码的概念描述，以下哪个选项是正确的？","options":"A. 子网掩码数量为25，则该子网可用IP地址数量为128; B. 用来标识IP地址网络位和主机位，值为1对应IP地址中的主机位; C. 子网掩码和IP地址进行逐位的“与”运算，即可得出广播地址; D. 子网掩码与IP地址长度相同，也是32bit","answer":"D"},
+  {"id":121,"question":"关于CIDR的描述中，以下哪个选项是错误的？","options":"A. 通过CIDR技术可以进行路由聚合; B. 使用网络前缀代替网络位和子网位; C. B类IP地址172.16.1.0/16通过CIDR技术可以聚合为172.16.1.0/12; D. 通过CIDR技术可以增加路由器中路由表的规模","answer":"D"},
+  {"id":122,"question":"关于移动IP基本概念的描述中，以下哪个选项是错误的？","options":"A. 移动节点的IP地址每移动一次IP地址变化一次; B. 本地代理/家乡代理使用隧道技术转交移动节点的数据包; C. 外部代理是移动节点漫游链路的默认路由器; D. 移动IP技术主要用于移动终端接入互联网终端","answer":"A"},
+  {"id":123,"question":"关于ARP工作原理的描述，以下哪个选项是错误的？","options":"A. ARP缓存表会永久保存学习到的MAC地址信息; B. ARP Request报文是广播; C. ARP Reply报文是单播; D. ARP报文不能跨子网转发","answer":"A"},
+  {"id":124,"question":"关于ARP基本概念的描述，以下哪个选项是正确的？","options":"A. 通过MAC地址解析IP地址; B. ARP属于数据链路层协议，并通过以太网帧承载; C. 当以太网帧中Type字段值为0x806时，表示承载ARP协议信息; D. 主机可以解析不同网段设备的MAC地址","answer":"C"},
+  {"id":125,"question":"关于IP层分组转发过程描述，以下哪个选项是错误的？","options":"A. 10.1.1.0/24、10.1.1.0/16可以出在同一路由表中; B. 选择前缀最长的路由转发分组; C. 去往同一目标网络只能有一个下一跳; D. 路由表只有去往目的网络下一跳信息，无完整路径信息","answer":"C"},
+  {"id":126,"question":"关于ICMP协议基本概念的描述，以下哪个选项是错误的？","options":"A. ICMP控制消息可以用于传递用户数据; B. 对分片的数据包，除第一片外后续所有分片都不发送ICMP差错报告报文; C. ICMP报文主要有差错报告和询问报文两种; D. PING和Tracert是ICMP的典型应用","answer":"A"},
+  {"id":127,"question":"ICMP的报文主要有差错报告和询问两种，关于ICMP报文的描述，以下哪个选项是正确的？","options":"A. Type=3时，表示终点不可达; B. 对具有特殊地址（如127.0.0.0或0.0.0.0）的数据包不发送ICMP差错报告报文; C. IP分组的TTL为0时，向源点发送参数问题的ICMP报文; D. Type值为0或8时，表示时间戳请求或应答","answer":"B"},
+  {"id":128,"question":"关于IPv6基本概念的描述，以下哪个选项是错误的？","options":"A. IPv6地址长度为128bit; B. IPv6地址的前缀长度最多为126位; C. IPv6地址可以使用“::”的方式进行压缩书写; D. IPv6首部长度必须是8B的整数倍","answer":"B"},
+  {"id":129,"question":"关于IPv6报文首部格式的描述，以下哪个选项是错误的？","options":"A. IPv6增加了Next Header，允许协议扩充，支持基本首部和扩展首部; B. IPv6首部中，Flow Label用于标识特定的数据包; C. IPv6报文无TTL字段，不支持跳数限制; D. IPv6的扩展首部不是IPv6分组数据必须携带的","answer":"C"},
+  {"id":130,"question":"关于IPv6地址分类的描述，以下哪个选项是正确的？","options":"A. IPv6地址也存在单播、组播、任播和广播; B. IPv6的组播地址固定以FE开头; C. 任播地址的目的地为一组主机并将数据转发到所有主机; D. IPv6单播地址中，链路本地地址的固定前缀为FE80::/10","answer":"D"},
+  {"id":131,"question":"以下哪个选项是正确的IPv6地址书写格式？","options":"A. 2001::1/10; B. 2001.1.1/10; C. 2001::1::1/10; D. 2001:1:0:0:0:0:0:1/10","answer":"A"},
+  {"id":132,"question":"关于路由器构成的描述，以下哪个选项是错误的？","options":"A. 路由器的结构可以分为路由选择和分组转发两部分; B. 分组转发部分主要由输入端口、交换结构和输出端口组成; C. 路由器是工作在数据链路层具有多个输入和输出端口的设备; D. 交换结构通过转发表进行分组数据的处理","answer":"C"},
+  {"id":133,"question":"关于数据交换方式的描述，以下哪个选项是正确的？","options":"A. 通过存储器进行交换的方式中，若存储器的带宽（读或写）为每秒M个分组，则路由器的交换速率小于等于M; B. 通过总线进行交换是指数据从输入端口通过单独的总线直接转发至输出端口; C. 通过互联网络进行交换是指可以通过一条总线连接N个输入和输出端口; D. 通过总线进行交换时路由器的转发带宽受总线速率的限制","answer":"D"},
+  {"id":134,"question":"关于路由器工作原理的描述，以下哪个选项是错误的？","options":"A. 路由器既能隔离冲突域也能隔离广播域; B. 路由器能够剥离数据帧首部，解析出IP数据包; C. 路由器的输入接口和输出接口不支持物理层和数据链路层处理; D. 路由器转发分组数据时可能会产生丢包问题","answer":"C"},
+  {"id":135,"question":"关于路由表的描述，以下哪个选项是错误的？","options":"A. 静态路由和动态路由都会计算路由表; B. 路由表中的路由信息都是最优且可用的; C. 开销最小的路径一定会放入路由表; D. 路由表中的掩码信息用于最长匹配机制","answer":"C"},
+  {"id":136,"question":"关于路由开销的描述，以下哪个选项是正确的？","options":"A. 开销是指转发分组的最优路径; B. 不同路由协议的开销是一致的; C. 不同路径的开销一定不同; D. 开销越小分组转发路径越优","answer":"D"},
+  {"id":137,"question":"关于静态路由描述中，以下哪个选项是错误的？","options":"A. 静态路由不建立路由表; B. 静态路由属于路由算法的一种; C. 静态路由不能随网络拓扑的变化而变化; D. 静态路由是人工方式进行配置","answer":"A"},
+  {"id":138,"question":"关于RIP路由协议算法的描述，以下哪个选项是正确的？","options":"A. 使用SPF算法计算最短路径; B. 路由表中记录去往目标网络的距离值; C. 计算路由的最大跳数为16; D. 通过发送链路状态信息的方式更新路由","answer":"B"},
+  {"id":139,"question":"关于OSPF路由协议工作原理的描述，以下哪个选项是错误的？","options":"A. 使用单播方式发送协议报文; B. 通过Hello报文建立邻居; C. 向相邻路由器发送链路状态信息; D. 采用SPF算法计算最优路由","answer":"A"},
+  {"id":140,"question":"关于路由选择协议的描述中，以下哪个选项是正确的？","options":"A. AS间的路由协议称为IGP; B. OSPF和RIP都属于IGP; C. 动态路由相对于静态路由开销更小; D. 动态路由也称为非自适应路由选择协议","answer":"B"},
+  {"id":141,"question":"关于OSPF区域的描述，以下哪个选项是错误的？","options":"A. 一个AS域可以包含多个OSPF区域; B. 只有主干区域的路由器可以连接其他AS域; C. OSPF区域的划分可以减少LSA泛洪的范围; D. OSPF不同区域间相连的路由器被称为区域边界路由器","answer":"B"},
+  {"id":142,"question":"关于RIP协议的描述，以下哪个选项是正确的？","options":"A. RIP路由表中距离值为15时，表示路径不可达; B. RIP协议路由计算使用SPF算法，不会出现路由环路问题; C. RIP路由协议使用TCP（端口号520）传递协议报文; D. RIP协议报文中路由部分长度为20B，每个RIP报文最多可携带25条路由信息","answer":"D"},
+  {"id":143,"question":"关于BGP路由协议的描述，以下哪个选项是错误的？","options":"A. BGP路由协议支持EBGP和IBGP两种连接; B. 从IBGP获取的路由信息可以通告给EBGP对等端，但不能通告给IBGP对等端; C. BGP使用TCP（端口号179）传递协议报文; D. AS-PATH属性为〈100，200，300〉表示收到的BGP路由起始AS为100","answer":"D"},
+  {"id":144,"question":"关于RIP协议工作原理的描述，以下哪个选项是错误的？","options":"A. RIP路由器仅与自己直连的路由器进行路由交换; B. RIP路由协议默认30S进行一次路由更新，交换路由信息; C. RIP路由协议根据距离值的大小选择最优的路径; D. RIP路由器新获得的路由信息与原路由表中路由信息一致但距离值更大，则保留原路由","answer":"D"},
+  {"id":145,"question":"关于OSPF协议工作原理的描述，以下哪个选项是错误的？","options":"A. LSA中包含IP网段、接口开销等信息; B. OSPF协议获取的网络拓扑信息是指路由器的物理组网; C. OSPF协议中Cost值越小代表路径越优; D. SPF算法中最短路径是指去往目标网络度量值最小的路径","answer":"B"},
+  {"id":146,"question":"关于BGP工作原理的描述，以下哪个选项是错误的？","options":"A. BGP路由信息在传递过程中，下一跳属性始终保持不变; B. BGP的Update报文可以用来更新和撤销路由信息; C. BGP路由器会选择AS-PATH路径最短的路由; D. 当BGP路由器收到Notification报文时，说明BGP连接出现问题","answer":"A"},
+  {"id":147,"question":"关于AS基本概念的描述，以下哪个选项是错误的？","options":"A. 主要有末梢AS、穿越AS、对等AS三大类; B. AS域间也可以使用静态路由互通; C. 同一AS域内只能使用一种IGP路由协议; D. 同一AS域内可以有多个OSPF区域","answer":"C"},
+  {"id":148,"question":"关于组播基本概念的描述，以下哪个选项是错误的？","options":"A. 组播可以实现一对多的通信; B. 组播地址的范围是224.0.0.0~224.255.255.255; C. 组播地址只能用于目的地址，而不能用于源地址; D. 组播MAC地址的前24位固定为0x01005e","answer":"B"},
+  {"id":149,"question":"关于IGMP基本概念的描述，以下哪个选项是错误的？","options":"A. IGMP主要用于主机与主机之间传递组播数据; B. IGMP主要功能有组查询、响应、抑制机制等; C. 主机使用IGMP告知想要加入的组播组; D. IGMP查询报文使用组播的方式进行发送","answer":"A"},
+  {"id":150,"question":"以下哪一项不是组播路由协议？","options":"A. DVMRP; B. PIM-SM; C. MOSPF; D. EBGP","answer":"D"},
+  {"id":151,"question":"关于组播地址的描述，以下哪个选项是正确的？","options":"A. 224.0.0.0~224.255.255.255的地址可以随意使用; B. 组播IP地址和组播MAC地址没有联系; C. 组播地址是IPv4地址分类中的D类地址; D. 可以使用PING命令检测组播地址的连通性","answer":"C"},
+  {"id":152,"question":"私网用户访问公网时需要进行NAT，关于NAT工作原理的描述，以下哪个选项是正确的？","options":"A. NAT技术只能用于转换源地址; B. NAT技术可以有效解决IPv4公网地址短缺问题; C. NAPT主要用于私网地址和公网地址一对一的场景; D. NoPAT主要用于私网地址和公网地址一对多的场景","answer":"B"},
+  {"id":153,"question":"以下哪个选项采用的是半双工的通信方式？","options":"A. 无线电广播; B. 对讲机; C. 电话; D. 以上选项均错误","answer":"B"},
+  {"id":154,"question":"某实验室的网络地址为196.178.21.0，要划分成6个子网，每个子网可容纳30台主机，以下哪个选项是适用的子网掩码？","options":"A. 255.255.255.248; B. 255.255.255.252; C. 255.255.255.224; D. 255.255.255.254","answer":"C"},
+  {"id":155,"question":"某企业有四个部门，分别规划使用如下四个网段：172.30.129.0/24、172.30.131.0/24、172.30.133.0/24和172.30.135.0/24，为了减少路由表规模需对四个网段进行路由聚合，以下哪个选项是汇聚之后的结果？","options":"A. 172.30.128.0/21; B. 172.30.128.0/22; C. 172.30.130.0/22; D. 172.30.132.0/20","answer":"A"},
+  {"id":156,"question":"以下哪个选项属于单播地址？","options":"A. 100.1.128.255/17; B. 192.168.100.3/30; C. 200.114.207.94/27; D. 224.0.0.23/16","answer":"C"},
+  {"id":157,"question":"以下哪个选项是200.116.1.255/22的地址类型？","options":"A. 网络地址; B. 直接广播地址; C. 受限广播地址; D. 主机地址","answer":"B"},
+  {"id":158,"question":"关于IPv4报文的分片和重组，以下哪个选项的描述是正确的？","options":"A. 源端分片，目的端重组; B. 中间路由器按需分片，目的端重组; C. 源端分片，中间路由器按需重组; D. 中间路由器按需分片，下一跳路由器重组","answer":"B"},
+  {"id":159,"question":"默认网关地址是172.28.15.33/28，以下哪个选项属于该子网下的主机地址？","options":"A. 172.28.15.32; B. 172.28.15.41; C. 172.28.15.47; D. 172.28.15.60","answer":"B"},
+  {"id":160,"question":"以下哪个选项是无线路由器开启DHCP服务时可使用的地址段？","options":"A. 192.168.0.1~192.168.0.128; B. 169.254.0.1~169.254.0.255; C. 127.0.0.1~127.0.0.128; D. 239.115.5.1~239.115.5.128","answer":"A"},
+  {"id":161,"question":"某学校使用10.1.1.0作为网络地址并进行子网划分，若所有子网中最大主机数量为600台，以下哪个选项的子网掩码长度规划最为合适？","options":"A. 22; B. 23; C. 24; D. 25","answer":"A"},
+  {"id":162,"question":"某公司网络中传输大小为6000字节的数据，但设备接口MTU为1500字节，关于分片数量的描述，以下哪个选项是正确的？","options":"A. 6; B. 5; C. 8; D. 2","answer":"B"},
+  {"id":163,"question":"某公司网络中传输大小为6000字节的数据，但设备接口MTU为1500字节，关于最后一个分片IP报文的字节数的描述，以下哪个选项是正确的？","options":"A. 80; B. 90; C. 100; D. 1500","answer":"C"},
+  {"id":164,"question":"假设用户A有4000台主机，分配的IP网段为200.112.64.0，关于子网掩码的描述，以下哪个选项正确的？","options":"A. 255.255.0.0; B. 255.255.192.0; C. 255.255.128.0; D. 255.255.240.0","answer":"D"},
+  {"id":165,"question":"某公司4个部门的网络分别为200.114.129.0/24、200.114.130.0/24、200.114.132.0/24和200.114.133.0/24，在网关路由器中进行汇聚，以下哪个选项是汇聚后的网络地址？","options":"A. 200.114.128.0/21; B. 200.114.128.0/22; C. 200.114.130.0/22; D. 200.114.132.0/20","answer":"A"},
+  {"id":166,"question":"关于200.111.10.192/26的描述，以下哪个选项是正确的？","options":"A. 网络地址; B. 组播地址; C. 主机地址; D. 广播地址","answer":"A"},
+  {"id":167,"question":"某公司网络中，某用户反映无法访问www.test.com的网站，局域网内其他用户正常，使用该用户主机上PING测试结果显示Destination net unreachable，以下哪个选项是该机不能正常访问的可能原因？","options":"A. 该用户的TCP/IP协议有问题; B. 网络中DNS服务器有问题; C. 该局域网存在网络攻击; D. 针对该IP地址设置了过滤策略","answer":"D"},
+  {"id":168,"question":"在IPv4向IPv6过渡时期，以下哪个选项可以解决IPv6主机之间通过IPv4网络进行通信的问题？","options":"A. 协议翻译技术; B. 隧道技术; C. 双协议栈技术; D. 多协议栈技术","answer":"B"},
+  {"id":169,"question":"关于60位的地址前缀AABB00000000EA5，以下哪个选项的书写格式是错误的？","options":"A. AABB:0000:0000:EA50:0000:0000:0000:0000/60; B. AABB::EA50:0:0:0:0/60; C. AABB:0:0:EA5/60; D. AABB:0:0:EA5::/60","answer":"C"},
+  {"id":170,"question":"配置路由器有多种方式，其中通过console口配置时，以下哪个选项需要连接至路由器的console口？","options":"A. 中继器; B. 集线器; C. 终端; D. 业务口","answer":"C"},
+  {"id":171,"question":"通过TELNET协议配置路由器时，以下哪个选项的描述是正确的？","options":"A. 需要将路由器连接至中继器; B. 需要将路由器与AUX接口相连; C. 路由器与管理终端之间的网络需三层可达; D. 路由器与管理终端必须在同一个网段","answer":"C"},
+  {"id":172,"question":"以下选项中哪个协议支持IPv6？","options":"A. RIPv1; B. RIPv2; C. OSPFv2; D. OSPFv3","answer":"D"},
+  {"id":173,"question":"下图所示拓扑中的设备均运行OSPF协议，并划分成了三个OSPF区域，以下哪个选项表示出了拓扑中的所有主干路由器？","options":"A. R1; B. R1和R2; C. R1、R2和R3; D. R1、R2、R3和R4","answer":"D"},
+  {"id":174,"question":"下图所示拓扑中的设备均运行OSPF协议，并划分成了三个OSPF区域，以下哪个选项表示出了拓扑中的所有区域边界路由器？","options":"A. R3; B. R3和R4; C. R3、R4和R5; D. R3、R4、R5和R6","answer":"B"},
+  {"id":175,"question":"关于RIPv1与RIPv2的区别，以下哪个选项的描述是正确的？","options":"A. RIPv1的最大跳数是16，RIPv2的最大跳数为15; B. RIPv1的度量值是跳数，RIPv2的度量值是带宽; C. RIPv1使用广播传递路由，RIPv2使用组播传递路由; D. RIPv1触发式路由更新，RIPv2周期性路由更新","answer":"C"},
+  {"id":176,"question":"以下哪个选项是边界网关协议BGP传送的信息？","options":"A. 地址前缀和IP地址; B. 地址前缀和自治系统编号; C. 网络掩码和路由器编号; D. 网络掩码和接口编号","answer":"B"},
+  {"id":177,"question":"以下哪个选项中的BGP属性不会随着BGP的Update报文通告给邻居？","options":"A. Origin; B. AS-PATH; C. Next-hop; D. PrefVal","answer":"D"},
+  {"id":178,"question":"如图所示，以下哪个选项的描述是正确的？","options":"A. R2为主干路由器; B. R5为区域边界路由器（ABR）; C. R4为自治系统边界路由器（ASBR）; D. R3为内部路由器","answer":"D"},
+  {"id":179,"question":"某公司网络中网关路由器的路由表如下图所示，根据BGP选路规则，以下哪个选项是正确的？","options":"A. 最优路由M，其AS-Path比N短; B. 最优路由N，其MED比M小; C. 最优路由随机确定; D. local-preference值为空，无法比较","answer":"A"},
+  {"id":180,"question":"以下哪个选项是RIPv2协议报文的目的IP地址？","options":"A. 127.0.0.1; B. 224.0.0.9; C. 224.0.0.5; D. 224.0.0.6","answer":"B"},
+  {"id":181,"question":"关于RIPv2水平分割技术的描述，以下哪个选项是错误的？","options":"A. 路由信息选择性通告; B. 路由器通告的路由信息不会再被发回; C. 防止路由环路; D. 路由信息发送给所有网络节点","answer":"D"},
+  {"id":182,"question":"OSPF协议把网络划分成4种区域（Area），关于存根区域（Stub）的特点，以下哪个选项的描述是正确的？","options":"A. 接收任何路由信息; B. 与主干区域相同，用于连接其他区域; C. 对本自治系统以外的目标采用默认路由; D. 不接受其他区域的明细路由和汇总路由","answer":"C"},
+  {"id":183,"question":"现有一条PPP链路，链路中有两台路由器配置了OSPF单区域，当这两台路由器的Router ID设置相同时，以下哪个选项是可能的结果？","options":"A. 两台路由器正常建立的完全邻居关系; B. 会提示两台路由器的Router ID冲突; C. 两台路由器正常建立的完全邻接关系; D. 两台路由器无法互相发送hello信息","answer":"B"},
+  {"id":184,"question":"如图所示，多个路由器相互连接构成一个网络拓扑，图中数字表示路由器之间链路的费用，以下哪个选项是通过OSPF协议计算出的路由器A到F的最短路径费用值？","options":"A. 13; B. 12; C. 10; D. 8","answer":"D"},
+  {"id":185,"question":"网络拓扑如下图所示，路由器均运行RIP协议，若主机H1发送数据给主机H2，以下哪个选项是最优路径？","options":"A. R1—R3—R6; B. R1—R2—R5—R6; C. R1—R2—R4—R6; D. R1—R2—R5—R4—R6","answer":"A"},
+  {"id":186,"question":"网络拓扑如下图所示，路由器均运行OSPF协议，链路上标识的是OSPF的链路开销，若主机H1发送数据给主机H2，以下哪个选项是最优路径？","options":"A. R1—R3—R6; B. R1—R2—R5—R6; C. R1—R2—R4—R6; D. R1—R2—R5—R4—R6","answer":"D"},
+  {"id":187,"question":"某局域网拓扑如下图所示，R1和R2运行RIPv2协议，且路由表如下：R1的路由表：1.1.1.0 is directly connected, FastEthernet0/1; 12.1.1.0 is directly connected, FastEthernet0/0; R2的路由表：1.0.0.0/8 12.1.1.1, FastEthernet0/0; 2.2.2.0 is directly connected, FastEthernet0/1; 12.1.1.0 is directly connected, FastEthernet0/0;其中，R1路由表未能收到2.0.0.0网段路由，以下哪个选项是可能的原因？","options":"A. R1与R2互连接口Down; B. R2的F0/0接口线缆出现问题; C. R1未运行RIPv2路由协议; D. R2没有将F0/1接口连接的网段宣告进RIP协议","answer":"D"}
+],
+          软件定义专项题库: [
+{"id":1,"question":"在OpenFlow交换机的Features消息中，用于唯一标识交换机的字段是（  ）。","options":"A. header; B. datapath-id; C. n_buffers; D. switch_id","answer":"B"},
+{"id":2,"question":"关于OpenFlow协议中的Port-Status消息，以下描述不正确的是（  ）。","options":"A. 在OpenFlow交换机中添加、删除或修改物理端口时，需要发送Port-Status消息来通知OpenFlow控制器; B. reason包括OFPPR_ADD（0）和OFPPR_DELETE（1）; C. Port字段描述了端口的具体信息，如端口号、端口的MAC地址、端口名称、端口配置、端口状态等; D. OFPT_PORT_STATUS：表明是Port-Status消息","answer":"B"},
+{"id":3,"question":"在OpenFlow交换机中添加、删除或修改物理端口时，需要发送（  ）消息来通知OpenFlow控制器。","options":"A. Port-Status消息; B. Role消息; C. Echo消息; D. Barrier消息","answer":"A"},
+{"id":4,"question":"OpenFlow交换机定义了三种类型的端口，分别是（  ）。","options":"A. 物理端口、逻辑端口、预留端口; B. 物理端口、虚拟端口、逻辑端口; C. 虚拟端口、预留端口、标准端口; D. 预留端口、逻辑端口、标准端口","answer":"A"},
+{"id":5,"question":"以下哪项不属于OpenFlow协议中的组表结构（  ）。","options":"A. Group Name; B. Group Type; C. Counters; D. Action Buckets","answer":"A"},
+{"id":6,"question":"关于OpenFlow计量表项（Meter Entry）结构，以下描述不正确的是（  ）。","options":"A. 计量表项ID：根据此标识符，使用这个计量表项，是32位无符号整数; B. 计量带：指定该计量表项如何处理数据包; C. 计数器：记录表项处理报文数目; D. 计量表类型：指定计量表的动作","answer":"D"},
+{"id":7,"question":"关于OpenFlow组表项中不同“组类型”的实现与功能，以下描述不正确的是（  ）。","options":"A. all：Group Table中所有的Action Buckets都会被执行; B. select：仅仅执行Group Table中的某一个Action Bucket; C. indirect：执行Group Table中已经定义好的Action Bucket，可以支持多个Action Bucket; D. fast failover：执行第一个“激活的”Action Bucket","answer":"C"},
+{"id":8,"question":"关于OpenFlow组表结构，以下描述不正确的是（  ）。","options":"A. Group ID：用于表示组的识别符，根据该识别符使用各组; B. Counters：记录通过该组表项处理的数据包数; C. Group Type：指定组的动作，分为all、select、indirect、fast failover四种; D. Action Buckets：多个行动数据桶，各行动数据桶存储了一个执行动作和其对应的参数","answer":"D"},
+{"id":9,"question":"关于OpenFlow1.1流表处理流程，以下描述不正确的是（  ）。","options":"A. OpenFlow交换机中可以存在多个流表，但必须从流表0开始匹配; B. 流表项的指令可以明确指定将数据包转至另一个流表处理（GOTO指令）; C. 若流表项不匹配，将会直接丢弃数据包; D. 若流表项不匹配，将会匹配Table-miss流表项","answer":"C"},
+{"id":10,"question":"以下不属于OpenFlow交换机流表项指令（Instructions）的是（  ）。","options":"A. Apply-Actions; B. Write-Actions; C. Clear-Actions; D. Mod-Actions","answer":"D"},
+{"id":11,"question":"关于OpenFlow术语，以下描述不正确的是（  ）。","options":"A. Action：表示转发packet到某个端口或修改packet的一个操作; B. Pipeline：表示传输packets的管道; C. Action set：表示与packet相关的一组actions; D. Action Buckets：表示多个动作数据桶","answer":"B"},
+{"id":12,"question":"与传统网络设备转发数据相比，OpenFlow交换机尝试定义一种新的网络处理模型是（  ）。","options":"A. 路由表; B. 流表; C. MAC地址表; D. 转发表","answer":"B"},
+{"id":13,"question":"关于OpenFlow1.2匹配项，以下描述不正确的是（  ）。","options":"A. 采用具有TLV结构的OXM; B. 采用固定长度的匹配字段; C. 优先级值越大，流表项匹配的优先级越高; D. 匹配项ETH_TYPE表示Ethernet帧类型","answer":"B"},
+{"id":14,"question":"使用OpenFlow协议在交换机s1中添加组表项，设置组表的组ID为1，组类型为all。第一个行动桶为：从2号端口输出，第二个行动桶为：从1号端口输出。以下写法正确的是（  ）。","options":"A. sh ovs-ofctl -O OpenFlow13 add-group s1 group_id=1,type=all,bucket=output:2,bucket=output:1; B. sh ovs-ofctl -O OpenFlow13 add-group s1 group_id=1,type=all,bucket=output:1,bucket=output:2; C. sh ovs-ofctl -O OpenFlow13 add-group s1 group_id=2,type=all,bucket=output:2,bucket=output:1; D. sh ovs-ofctl -O OpenFlow13 add-group s1 group_id=1,type=select,bucket=output:1,bucket=output:2","answer":"C"},
+{"id":15,"question":"OpenFlow协议是（  ）之间的通信协议。","options":"A. OpenFlow交换机与OpenFlow交换机; B. OpenFlow控制器与OpenFlow交换机; C. 主机与OpenFlow控制器; D. 主机与OpenFlow交换机","answer":"B"},
+{"id":16,"question":"下列选项中（  ）被认为是第一个软件定义网络（SDN）标准。","options":"A. OpenFlow; B. OpenStack; C. IEEE 802.1aq; D. OpenDaylight","answer":"A"},
+{"id":17,"question":"以下哪个命令不是Mininet常用交互命令（  ）。","options":"A. iperftcp; B. link; C. links; D. py","answer":"A"},
+{"id":18,"question":"关于Mininet安装，以下说法不正确的是（  ）。","options":"A. 假如安装环境上有Mininet、OvS以前版本痕迹，需先进行删除后再进行安装; B. ~/mininet/util/install.sh -n3V 2.5.0表示安装2.5.0版本的Mininet; C. Mininet的VM安装是Mininet最简单的安装方法; D. 安装完成后可通过命令mn --test pingall测试Mininet是否安装成功","answer":"B"},
+{"id":19,"question":"Mininet命令行中删除交换机s1上条件字段中包含in_port=1的所有流表，命令正确的是（  ）。","options":"A. sh ovs-ofctl del-flows s1 in_port=1; B. dpctl del-flows in_port=1; C. sh ovs-ofctl del-flow s1 in_port=1; D. dpctl del-flows in_port=all","answer":"A"},
+{"id":20,"question":"针对下图中的拓扑，添加OpenFlow流表项使得主机1和主机2之间相互通信，写法正确的是（  ）。","options":"A. dpctl add-flow in_port=2,actions=output:1  dpctl add-flow in_port=1,actions=output:2; B. dpctl add-flow in_port=2,actions=output:3  dpctl add-flow in_port=3,actions=output:2; C. dpctl add-flow in_port=1,actions=output:3  dpctl add-flow in_port=3,actions=output:1; D. dpctl add-flow in_port=1,actions=output:2  dpctl add-flow in_port=2,actions=output:3","answer":"A"},
+{"id":21,"question":"以下网元中Mininet无法构建的是（  ）。","options":"A. 主机; B. SDN交换机; C. 打印机; D. SDN控制器","answer":"C"},
+{"id":22,"question":"Mininet的安装方法是（  ）。","options":"A. 下载Mininet VM镜像; B. 本地安装Mininet源代码; C. 安装Mininet文件包; D. 以上都是","answer":"D"},
+{"id":23,"question":"关于OpenDaylight控制器，以下描述错误的是（  ）。","options":"A. 支持北向接口REST; B. 支持多种南向接口协议; C. 管理方式只有CLI，不支持Web UI; D. 相比其他控制器而言，OpenDaylight学习曲线相对复杂","answer":"C"},
+{"id":24,"question":"Mininet命令行中查看流表的命令是（  ）。","options":"A. dpctl dump-flows; B. ofctl dump-flows; C. dpctl show-flows; D. ofctl show-flows","answer":"A"},
+{"id":25,"question":"使用Mininet设置一个交换机和n个主机相连的拓扑，命令是（  ）。","options":"A. mn --topo minimal; B. mn --topo single,n; C. mn --topo linear,n; D. mn --topo tree,depth=n,fanout=m","answer":"B"},
+{"id":26,"question":"Mininet的网络构建参数（  ）用于设置设备的MAC地址。","options":"A. --mac; B. --switch; C. --topo; D. --controller","answer":"A"},
+{"id":27,"question":"以下Mininet内部交互命令中使用错误的是（  ）。","options":"A. pingall：所有主机节点之间互Ping; B. iperf：两节点间进行iperfudp宽带测试; C. nodes：列出所有的节点; D. py net.get(‘h3’).cmd(‘ifconfig h3-eth0 10.3’)：给h3赋予IP（10.0.0.3）","answer":"D"},
+{"id":28,"question":"使用Python脚本创建Mininet拓扑，具体脚本内容如下所示，对该脚本描述错误的是（  ）。","options":"A. 该脚本创建深度为2，每层树枝为3的树型拓扑; B. 拓扑构建完成后执行主机间的pingall操作; C. 该拓扑包括1个交换机和2个主机; D. pingall操作完成后停止操作","answer":"C"},
+{"id":29,"question":"在Mininet的MiniEdit画布上设置非本机上部署的远端控制器属性时，以下属性设置不正确的是（  ）。","options":"A. Controller Port：6633; B. Controller Type：Remote Controller; C. Protocol：TCP; D. IP Address：127.0.0.1","answer":"D"},
+{"id":30,"question":"关于Mininet的MiniEdit画布上的控件，以下描述不正确的是（  ）。","options":"A. Select：该选择工具用于移动画布上的节点，单击并拖动任何现有的节点; B. Host：该主机工具在画布上用于创建主机节点; C. Switch：该传统交换机工具用于创建具有默认设置的学习以太网交换机; D. Netlink：该网络链路工具用于创建画布上的节点之间的联系","answer":"C"},
+{"id":31,"question":"关于Mininet可视化工具MiniEdit，以下描述错误的是（  ）。","options":"A. 使用Mininet可视化界面方便了用户自定义拓扑创建，为不熟悉Python脚本的使用者创造了更简单的环境，界面直观，可操作性强; B. 执行命令sudo ~/mininet/examples/miniedit.py可关闭MiniEdit窗口; C. MiniEdit的用户界面在画布的左侧显示一排工具图标，并在窗口顶部显示一个菜单栏; D. Mininet的可视化界面可进行自定义拓扑和自定义设置","answer":"B"},
+{"id":32,"question":"以下Mininet内部交互命令，使用错误的是（  ）。","options":"A. link：禁用或启用两个节点之间的链路; B. dump：显示网络连接情况; C. dpctl：在所有交换机上用dpctl（或ovs-ofctl）执行相关命令; D. py：执行Python表达式","answer":"B"},
+{"id":33,"question":"Mininet软件的功能是（  ）。","options":"A. 网络加速器; B. 网络模拟器; C. 虚拟交换机; D. 虚拟路由器","answer":"B"},
+{"id":34,"question":"关于Mininet功能，以下描述错误的是（  ）。","options":"A. 支持任意自定义拓扑，主机数可达4096; B. 提供用于网络创建和实验的可扩展Python API; C. 启用复杂的拓扑测试，无需连接物理网络; D. Mininet自带控制器功能强大，适合各种场景下的测试","answer":"D"},
+{"id":35,"question":"关于Mininet的文件目录结构，以下描述错误的是（  ）。","options":"A. 核心代码基本在mininet子目录; B. custom/放置自定义的Python文件，用来自定义拓扑; C. examples/包含很多实用案例，包括Miniedit可视化; D. util/用于放置主运行文件","answer":"D"},
+{"id":36,"question":"Mininet使用的虚拟化技术是（  ）。","options":"A. Hypervisor; B. KVM; C. namespace; D. QEMU","answer":"C"},
+{"id":37,"question":"SDN的第一个初创公司是（  ）。","options":"A. Google; B. ONF; C. ON.LAB; D. Nicira Networks","answer":"D"},
+{"id":38,"question":"关于Google B4网络，以下说法不正确的是（  ）。","options":"A. 属于早期的规模商用案例; B. 南向协议采用的是NETCONF; C. 部署和完善使用了3年时间; D. 链路利用率从30%—40%提高到70%","answer":"B"},
+{"id":39,"question":"广域网中采用SD-WAN方案是为了（  ）。","options":"A. 提高带宽利用率; B. 节省成本; C. 路径集中控制; D. 以上都是","answer":"D"},
+{"id":40,"question":"SDN可以在（  ）中应用。","options":"A. 数据中心; B. 局域网; C. 无线蜂窝网; D. 以上都是","answer":"D"},
+{"id":41,"question":"SDN最早雏形是由（  ）提出的。","options":"A. ONF; B. Stanford University; C. ON.LABS; D. Cisco","answer":"B"},
+{"id":42,"question":"关于Mininet，以下描述错误的是（  ）。","options":"A. Mininet是由斯坦福大学基于Linux Container架构开发的; B. Mininet是一个虚拟化网络仿真工具; C. Mininet可以创建一个含有主机、交换机、控制器和链路的虚拟化网络; D. 使用Mininet进行拓扑测试时需要连接实际的物理网络","answer":"D"},
+{"id":43,"question":"SDN架构不包括以下哪一项（  ）。","options":"A. SDN控制器; B. SDN应用; C. 路由器; D. SDN数据面","answer":"C"},
+{"id":44,"question":"传统网络系统存在的问题是（  ）。","options":"A. 垂直集成的封闭系统; B. 网络功能的简单堆砌; C. 行业创新基本停滞; D. 以上都是","answer":"D"},
+{"id":45,"question":"关于OF-CONFIG协议，以下说法错误的是（  ）。","options":"A. 控制器可以用OF-CONFIG协议来管理和配置OF交换机; B. OF-CONFIG v1.1.1协议版本增加对OpenFlow v1.3.1协议的支持; C. OF-CONFIG可以影响流表的内容和数据转发行为; D. OF-CONFIG可以在OF交换机上配置控制器IP地址、配置交换机端口上的队列等操作","answer":"C"},
+{"id":46,"question":"下面对OF-CONFIG协议理解错误的是（  ）。","options":"A. 一个OpenFlow配置点只能管理一个OF交换机; B. OF-CONFIG通过NETCONF协议来传输内容; C. OF-CONFIG适用于所有支持OpenFlow协议的交换机，包括软件交换机和硬件交换机; D. OF-CONFIG最主要的设计目标是协助OpenFlow协议，支持用户远程对OF交换机进行配置和管理","answer":"A"},
+{"id":47,"question":"下列OpenFlow消息中，属于对称类型的消息是（  ）。","options":"A. Echo消息; B. Packet-In消息; C. Features消息; D. Flow-Mod消息","answer":"A"},
+{"id":48,"question":"当SDN交换机碰到新数据包不知道如何处理，或者Action要求发送给控制器，那么交换机就会用（  ）消息发送给控制器。","options":"A. Configuration; B. Packet-in; C. Flow-mod; D. Packet-out","answer":"B"},
+{"id":49,"question":"OpenFlow控制器向交换机发送（  ）消息，请求OpenFlow交换机上传自己的详细参数。","options":"A. Features; B. Configuration; C. Hello; D. Echo","answer":"A"},
+{"id":50,"question":"OpenFlow控制器与交换机之间相互发送（  ）消息，用于协商双方的OpenFlow版本号。","options":"A. Features; B. Configuration; C. Hello; D. Echo","answer":"C"},
+{"id":51,"question":"SDN南向接口协议的主要任务包括（  ）。","options":"A. 转发控制; B. 管理与配置; C. 路径计算; D. 以上都是","answer":"D"},
+{"id":52,"question":"关于NETCONF协议，以下描述错误的是（  ）。","options":"A. 提供一套管理网络设备的机制; B. 用于SDN控制器对网络设备进行配置管理; C. 是一种SDN北向接口协议; D. 采用Client/Server结构","answer":"C"},
+{"id":53,"question":"OVSDB协议使用的默认侦听端口是（  ）。","options":"A. 6640; B. 6633; C. 6632; D. 6642","answer":"A"},
+{"id":54,"question":"SDN控制器启动后默认端口号是（  ）。","options":"A. 8000; B. 8080; C. 6633; D. 6683","answer":"C"},
+{"id":55,"question":"以下（  ）不属于NETCONF协议的分层结构。","options":"A. 内容层; B. 操作层; C. 基础设施层; D. 安全传输层","answer":"C"},
+{"id":56,"question":"VxLAN头部字段中用于区分VxLAN的字段为（  ）。","options":"A. VNI; B. Vlan; C. Vxlan; D. Flags","answer":"A"},
+{"id":57,"question":"下面对Open vSwitch各模块描述不正确的是（  ）。","options":"A. ovs-vswitchd：主要模块，实现vswitch的守候进程daemon; B. ovsdb-server：轻量级数据库服务器，保存配置信息; C. ovs-dpctl：用来配置vswitch内核模块的一个工具; D. ovs-vsctl：查询和控制OpenFlow虚拟交换机的流表","answer":"D"},
+{"id":58,"question":"Open vSwitch架构包含了哪几个部分（  ）。","options":"A. 网桥、端口、链路; B. 内核空间、用户空间、配置管理层; C. CPU、RAM、ROM; D. 学习、存储、转发","answer":"B"},
+{"id":59,"question":"结合以下Open vSwitch的具体信息，描述错误的是（  ）。","options":"A. 上述信息显示了一个名为br0的桥（交换机）; B. 一个OpenvSwitch交换机只能有一个网桥; C. 该交换机有两个接口，一个是eth0，一个是br0; D. 创建桥的时候自动创建一个和桥名字一样的接口br0，并自动作为该桥的一个端口","answer":"B"},
+{"id":60,"question":"关于ovs-vsctl网桥管理常用命令，以下使用错误的是（  ）。","options":"A. add-br BRIDGE：添加新的网桥; B. list-br：打印网桥中所有port摘要信息; C. get-controller BRIDGE：获取网桥的控制器信息; D. set-controller BRIDGE TARGET：向网桥添加控制器","answer":"B"},
+{"id":61,"question":"关于Open vSwitch流表管理常用命令，以下使用错误的是（  ）。","options":"A. ovs-ofctl dump-flows SWITCH：输出交换机中匹配的流表项; B. ovs-ofctl add-flow SWITCH FLOW：向交换机添加流表项; C. ovs-ofctl mod-flows SWITCH FLOW：修改交换机的流表项; D. ovs-ofctl del-flows SWITCH FLOW：删除交换机的流表项","answer":"A"},
+{"id":62,"question":"SDN交换机基于（  ）实现转发。","options":"A. MAC地址表; B. 路由表; C. 流表; D. IP表","answer":"C"},
+{"id":63,"question":"Open vSwitch的核心模块是（  ）。","options":"A. ovs-vswitchd; B. ovsdb-server; C. datapath; D. ovs-ofctl","answer":"A"},
+{"id":64,"question":"Open vSwitch的ovs-ofctl dump-flows br-sw命令作用是（  ）。","options":"A. 显示网桥信息; B. 显示所有端口; C. 显示所有流表; D. 显示OVS交换机信息","answer":"C"},
+{"id":65,"question":"Open vSwitch软件交换机删除网桥br-sw的命令是（  ）。","options":"A. ovs-ofctl del-br br-sw; B. ovs-vsctl del-br br-sw; C. ovs-ofctl del-port br-sw; D. ovs-vsctl del-port br-sw","answer":"B"},
+{"id":66,"question":"关于OpenFlow v1.3中的流表，以下描述错误的是（  ）。","options":"A. 每个流表项代表一个转发规则; B. 进入交换机的数据包通过查询流表来获得转发的目的端口; C. 流表项由多个流表（FlowTable）组成; D. 流表项的匹配字段描述了何种数据包与流表项匹配","answer":"C"},
+{"id":67,"question":"关于常用的OpenFlow流规则动作output:port，以下描述正确的是（  ）。","options":"A. 写数据到指定的字段; B. 修改源或者目标的MAC地址信息; C. 输出数据包到指定的端口，port是指端口的OpenFlow端口编号; D. 修改源或者目标的IPv4地址信息","answer":"C"},
+{"id":68,"question":"结合如下SDN控制器下发的流表，关于最后两条流表（即框中所画）描述正确的是（  ）。","options":"A. 第一条流表：从主机10.0.0.5发往主机10.0.0.3且入端口为port1的数据包从交换机的port2端口转发出去。第二条流表：从主机10.0.0.3发往主机10.0.0.5且入端口为port2的数据包从交换机的port1端口转发出去; B. 第一条流表：从主机10.0.0.5发往主机10.0.0.3且入端口为port2的数据包从交换机的port1端口转发出去。第二条流表：从主机10.0.0.3发往主机10.0.0.5且入端口为port1的数据包从交换机的port2端口转发出去; C. 第一条流表：从主机10.0.0.5发往主机10.0.0.3且入端口为port1的数据包从交换机的port3端口转发出去。第二条流表：从主机10.0.0.3发往主机10.0.0.5且入端口为port3的数据包从交换机的port1端口转发出去; D. 第一条流表：从主机10.0.0.5发往主机10.0.0.3且入端口为port3的数据包从交换机的port1端口转发出去。第二条流表：从主机10.0.0.3发往主机10.0.0.5且入端口为port1的数据包从交换机的port3端口转发出去","answer":"A"},
+{"id":69,"question":"关于OpenFlow流规则动作normal，以下描述正确的是（  ）。","options":"A. 输出数据包到指定的端口; B. 修改源或者目标的MAC地址信息; C. 根据传统L2或L3栈的动作完成交换机动作; D. 修改源或者目标的IPv4地址信息","answer":"C"},
+{"id":70,"question":"将OpenFlow数据包发送至控制器的正确操作是（  ）。","options":"A. output:port; B. controller; C. normal; D. all","answer":"B"},
+{"id":71,"question":"OpenFlow1.0包头域用于数据包匹配，以下（  ）不属于它的匹配字段。","options":"A. IPV6_SRC; B. Ingress Port; C. Ethernet source address; D. Ether Type","answer":"A"},
+{"id":72,"question":"OpenFlow1.0包头域用于数据包匹配，以下（  ）表示IPv4头中的协议字段。","options":"A. Ingress Port; B. Ethernet source address; C. Vlan Priority; D. IP protocol","answer":"D"},
+{"id":73,"question":"OpenFlow1.0流表中行动规定了流表项对匹配到的数据流的处理方法，以下描述错误的是（  ）。","options":"A. 每个流表项对应0个或者多个行动; B. 如果没有转发行动，则默认丢弃（drop）; C. 有多个行动则需要依照优先级顺序依次进行; D. 当交换机收到控制器下发的流表中包含当前交换机不支持的行动时，交换机不做处理","answer":"D"},
+{"id":74,"question":"下列不是OpenDaylight L2 Switch项目包含的服务是（  ）。","options":"A. 流表下发服务; B. 流量调度服务; C. 主机跟踪服务; D. 环路消除服务","answer":"B"},
+{"id":75,"question":"OpenFlow1.0流表中行动规定了流表项对匹配到的数据流的处理方法，其中必备行动是指（  ）。","options":"A. 交换机默认支持的行动; B. 需要通过特定的消息告知控制器; C. 转发（Forward）行动; D. 丢弃（Drop）行动","answer":"A"},
+{"id":76,"question":"OpenFlow1.0流表中行动规定了流表项对匹配到的数据流的处理方法，以下（  ）不属于必备行动。","options":"A. ALL; B. NORMAL; C. CONTROLLER; D. IN_PORT","answer":"B"},
+{"id":77,"question":"OpenFlow1.0流表中行动规定了流表项对匹配到的数据流的处理方法，以下（  ）不属于可选行动。","options":"A. NORMAL; B. FLOOD; C. Modify-Field; D. Drop","answer":"D"},
+{"id":78,"question":"OpenFlow1.0流表中Modify-Field行动是指修改匹配到的数据包包头内容，以下不属于其具体行动内容的是（  ）。","options":"A. Set VLAN ID; B. Modify Ethernet source MACaddress; C. Modify IPV4 source address; D. Set VLAN header","answer":"D"},
+{"id":79,"question":"在SDN网络中，网络设备只单纯的负责（  ）。","options":"A. 流量控制; B. 数据丢弃; C. 数据转发; D. 维护网络拓扑","answer":"C"},
+{"id":80,"question":"在Open vSwitch上添加一条OpenFlow流表项，设置流表项生命周期为1000s，优先级为17，入端口为3，动作是output:2，写法正确的是（  ）。","options":"A. ovs-vsctl add-flow br0 idle_timeout=1000,priority=17,in_port=3,actions=output:2; B. ovs-ofctl add-flow br0 idle_timeout=1000,priority=17,in_port=3,actions=output:2; C. ovs-vsctl add-flow br0 idle_timeout=1000,priority=17,port=3,actions=output:2; D. ovs-ofctl add-flow br0 idle_timeout=1000,priority=17,port=3,actions=output:2","answer":"B"},
+{"id":81,"question":"关于OpenFlow多级流表，以下描述错误的是（  ）。","options":"A. 多级流表是指每个OpenFlow交换机包含多个流表，每个流表包含多个流表项; B. 采用流水线方式处理; C. 流表项的指令可以明确指定将数据包转至另一个流表处理（Write-Actions指令）; D. 一个流表项只能将数据包转到大于自己流表号的流表","answer":"C"},
+{"id":82,"question":"OpenFlow协议中数据包在一个流表中的所有流表项都没有匹配成功被称为漏表行为（Table-miss），以下（  ）是Table-miss表项的动作。","options":"A. 将数据包转发给控制器; B. 丢弃; C. 转交给后面的流表进行处理; D. 以上都是","answer":"C"},
+{"id":83,"question":"关于SDN架构，以下说法错误的是（  ）。","options":"A. 架构最底层的交换设备只需要提供最基本、最简单的功能; B. SDN适合于云计算供应商以及面对大幅扩展工作负载的企业; C. SDN转发与控制分离的架构，可使得网络设备通用化、简单化; D. SDN技术不能实现灵活的集中控制和云化的应用感知","answer":"D"},
+{"id":84,"question":"OpenFlow流表项动作中没有下列哪一个（  ）。","options":"A. 丢弃; B. 将数据包发送至交换机本地的网络栈; C. 上报控制器; D. 修改流表生存时间","answer":"D"},
+{"id":85,"question":"控制器与OpenFlow交换机之间相互发送Hello消息，用于协商双方的OpenFlow版本号，在双方支持的最高版本号不一致的情况下，协商的结果将以较高的OpenFlow版本为准。","options":"","answer":"错误"},
+{"id":86,"question":"OpenFlow v1.3中每台OpenFlow交换机只有一张流表。","options":"","answer":"错误"},
+{"id":87,"question":"OpenFlow控制器通过下发流表来指导数据平面流量的转发。","options":"","answer":"正确"},
+{"id":88,"question":"OpenFlow v1.0中提出了组表（Group Table）的概念。","options":"","answer":"错误"},
+{"id":89,"question":"Table-miss流表项是发生Table-miss时使用的流表项，它将所有的字段处理为通配符，是优先级最低的流表项。","options":"","answer":"正确"},
+{"id":90,"question":"Mininet中--switch参数默认使用内核态交换机。","options":"","answer":"错误"},
+{"id":91,"question":"Mininet命令行中流表命令dpctl add-flow in_port=2，actions=drop表示让所有交换机丢弃从2号端口发来的所有数据包。","options":"","answer":"正确"},
+{"id":92,"question":"在控制器先下发的流表和后添加的流表中，优先匹配后添加的流表。","options":"","answer":"错误"},
+{"id":93,"question":"Mininet既可以通过参数--topo来指定拓扑类型，还可以通过脚本来创建拓扑。","options":"","answer":"正确"},
+{"id":94,"question":"在Mininet命令行操作界面通过ping操作和iperf命令可以验证主机间的连通性以及进行带宽分析。","options":"","answer":"正确"},
+{"id":95,"question":"控制器通过Port-status消息确保之前下发的消息已经被交换机执行完。","options":"","answer":"错误"},
+{"id":96,"question":"YANG是随着OpenFlow协议而产生的数据建模语言。","options":"","answer":"错误"},
+{"id":97,"question":"Flow-mod消息中的idle_time表示当这条流表项在规定的时间内没有匹配到数据分组，则该流表项失效。","options":"","answer":"正确"},
+{"id":98,"question":"OpenDaylight采用OSGI体系结构，可以解决组件之间的隔离问题。","options":"","answer":"正确"},
+{"id":99,"question":"RESTCONF描述了一种RESTful协议，此协议提供HTTP上的编程接口，用于访问YANG定义的数据，使用NETCONF定义的数据存储。","options":"","answer":"正确"},
+{"id":100,"question":"NETCONF协议定义了配置数据存储和一系列的创建、获取、更新和删除操作，可用于访问数据存储。","options":"","answer":"正确"},
+{"id":101,"question":"在OpenFlow中，Symmetric消息指由交换机或控制器主动发起，并需要接受对方的应答的消息，比如Hello、Echo和Packet-in。","options":"","answer":"错误"},
+{"id":102,"question":"YANG UI模块用于与OpenDaylight交互，通过动态封装、调用YANG模型和相关REST APIs，生成并展示一个简单的UI界面。","options":"","answer":"正确"},
+{"id":103,"question":"Mininet由虚拟的终端节点（End-Host）、OpenFlow交换机、控制器（也支持远程控制器）组成，它可以模拟真实网络。","options":"","answer":"正确"},
+{"id":104,"question":"Mininet仿真工具无法连接远程控制器。","options":"","answer":"错误"},
+{"id":105,"question":"查看Open vSwitch上br0网桥上的流表，应执行命令ovs-vsctl dump-flows br0。","options":"","answer":"错误"},
+{"id":106,"question":"安装Open vSwitch时必须根据系统内核版本选择相应的Open vSwitch版本。","options":"","answer":"正确"},
+{"id":107,"question":"Open vSwitch是由Nicira、Stanford、UC Berkeley的研究人员共同提出的商业软件交换机，它基于C语言开发。","options":"","answer":"错误"},
+{"id":108,"question":"OpenFlow Echo消息用来确认控制器和交换机之间是否连接、检测通信延迟、测量通信带宽等。","options":"","answer":"正确"},
+{"id":109,"question":"Mininet作为一个轻量级软定义网络研发和测试平台，其主要特性包括灵活性、可移植性、可扩展性、真实性和共享性。","options":"","answer":"正确"},
+{"id":110,"question":"OF-CONFIG与OpenFlow之间存在着密切的关系，因此随着OpenFlow标准的演进，OF-CONFIG的版本也在不断跟进。","options":"","answer":"正确"},
+{"id":111,"question":"OVSDB数据库由两个主要部分构成，即ovsdb-server和ovsdb-client。","options":"","answer":"正确"},
+{"id":112,"question":"OVSDB管理协议是VMware公司提出的负责管理OVS数据库的协议，OVSDB管理协议定义了一套RPC接口，用户可通过远程调用的方式管理OVSDB。","options":"","answer":"正确"},
+{"id":113,"question":"从OpenFlow1.1开始，控制器与交换机之间的安全通道既可以使用TLS安全隧道，也可以选择普通TCP连接。","options":"","answer":"正确"},
+{"id":114,"question":"OpenFlow v1.3开始引入组表以及计量表的概念。","options":"","answer":"错误"},
+{"id":115,"question":"OpenFlow v1.3中流表项包括三个字段：包头域、计数器以及行动。","options":"","answer":"错误"},
+{"id":116,"question":"OpenFlow交换机通过使用OpenFlow协议的安全通道与控制器进行通信。","options":"","answer":"正确"},
+{"id":117,"question":"OpenFlow v1.0协议不支持多级流表。","options":"","answer":"正确"},
+{"id":118,"question":"在OpenFlow v1.0中不仅存在流表的概念，也包含组表的概念。","options":"","answer":"错误"},
+{"id":119,"question":"SDN即OpenFlow。","options":"","answer":"错误"},
+{"id":120,"question":"OF-CONFIG的本质是提供一个开放接口，主要用于控制OpenFlow交换机以及远程配置。","options":"","answer":"正确"},
+{"id":121,"question":"控制器下发流表主要有两种模式，分别是reactive模式和proactive模式，proactive模式的设置必须在控制器与交换机建立连接后立刻下发流表。","options":"","answer":"错误"},
+{"id":122,"question":"OpenFlow交换机只有一张流表，这张流表中存储着许多的流表项。","options":"","answer":"错误"},
+{"id":123,"question":"常见的SDN南向接口协议有：OpenFlow、RESTCONF、OVSDB、OF-CONFIG和NETCONF。","options":"","answer":"错误"},
+{"id":124,"question":"Open vSwitch提供了对OpenFlow协议的支持，用户可以使用任何支持OpenFlow协议的控制器对OVS进行远程管理控制。","options":"","answer":"正确"},
+{"id":125,"question":"OpenFlow v1.3中，table-miss表项指定在流表中如何处理与其他流表项未匹配的数据包。","options":"","answer":"正确"},
+{"id":126,"question":"OpenFlow v1.3协议中的交换机含有多个流表，每个流表中含有多个流表项，每个流表项包含一个匹配项及对应的指令。","options":"","answer":"错误"},
+{"id":127,"question":"Flow-mod消息中，idle_time和hard_time同时设置时，以hard_time设置的时间为准。","options":"","answer":"错误"},
+{"id":128,"question":"SDN的意义在于削弱底层基础设施的作用，利用软件可以实时地对其进行重新配置和编程。","options":"","answer":"正确"},
+{"id":129,"question":"流表的下发可以是主动的，也可以是被动的。","options":"","answer":"正确"},
+{"id":130,"question":"OpenFlow交换机接收到数据包后，首先在本地的流表上查找转发目标端口，如果没有匹配，则把数据包转发给Controller，由控制层决定转发端口。","options":"","answer":"正确"},
+{"id":131,"question":"SDN北向接口是通过控制器向上层业务应用开放的接口，其目标是使得业务应用能够便利地调用底层的网络资源和能力。","options":"","answer":"正确"},
+{"id":132,"question":"在Mininet中，命令sudo mn --topo linear,4表示创建一个4个主机，1个交换机的拓扑。","options":"","answer":"错误"},
+{"id":133,"question":"命令sudo mn --topo tree,fanout=2,depth=2所创建的拓扑中交换机个数为2个，主机个数为4个。","options":"","answer":"错误"},
+{"id":134,"question":"Port是OVS Bridge上创建的一个虚拟端口，每个Port都隶属于一个Bridge。","options":"","answer":"正确"},
+{"id":135,"question":"在OVS中，datapath负责执行数据交换，也就是把从接收端口收到的数据包在流表中进行匹配，并执行匹配到的动作。","options":"","answer":"正确"},
+{"id":136,"question":"关于NETCONF协议，以下描述错误的是（  ）。","options":"A. NETCONF是一种基于JSON的网络配置管理协议; B. NETCONF协议分为传输层、RPC层、操作层和内容层; C. 在NETCONF协议中，内容层是唯一没有标准化的层; D. NETCONF的配置功能非常强大，同时兼顾监控和故障管理，安全验证和访问控制，因此得到业界的一致认可","answer":"A"},
+{"id":137,"question":"关于OpenFlow1.0流表，以下描述不正确的是（  ）。","options":"A. 流表项主要由3部分组成，分别是分组头域（Head Field）、计数器（Counter）和动作表（Action）; B. 一个数据分组进入OF交换机后需要先匹配流表，若符合其中某条表项的特征，则按照相应的动作进行转发; C. 一个数据分组进入OF交换机后需要先匹配流表，若没有匹配某条表项的特征，则封装为Packet-in消息通过安全通道交给控制器，再由控制器决定如何处理; D. 每条流表项会永久存在，不会自动删除","answer":"D"},
+{"id":138,"question":"关于MD-SAL，以下描述错误的是（  ）。","options":"A. MD-SAL是Model-Driven Service Abstraction Layer的缩写; B. MD-SAL的作用是实现北向接口与南向接口的紧耦合，保证南北向接口相互影响; C. MD-SAL的理念是模型驱动; D. MD-SAL基于Data Store的数据模型提供松散的南北向Plugin映射","answer":"B"},
+{"id":139,"question":"以下不属于OpenFlow v1.0中流表项的组成的是（  ）。","options":"A. 分组头域; B. 计数器; C. 动作表; D. 子网掩码","answer":"D"},
+{"id":140,"question":"以下不属于OpenFlow v1.3中流表项的组成的是（  ）。","options":"A. 规则; B. 匹配字段; C. 优先级; D. 计数器","answer":"A"},
+{"id":141,"question":"以下不属于OpenFlow协议Flow-Mod消息中的数据匹配字段的是（  ）。","options":"A. dl_src; B. out_port; C. nw_tos; D. dl_vlan","answer":"B"},
+{"id":142,"question":"下图中SDN控制器下发流表的动作类型是（  ）。","options":"A. OFPFC_ADD; B. OFPFC_DELETE; C. OFPFC_FLOW_MODIFY; D. OFPFC_FLOW_MODIFY-STRICT","answer":"B"},
+{"id":143,"question":"关于OpenFlow协议中的Packet-in消息，以下描述不正确的是（  ）。","options":"A. Packet-in消息由OpenFlow交换机发出并发送到OpenFlow控制器; B. 当交换机收到一个数据包后，会查找流表，如果流表中没有匹配条目，则交换机会将数据包封装在Packet-in消息中发送给控制器处理; C. 匹配的流表项中的行动为“发往控制器”（OFPR_ACTION），此时数据包会被缓存在交换机中; D. 可以通过Packet-in/Packet-out发现交换机之间的链路","answer":"C"},
+{"id":144,"question":"关于OpenFlow协议中Packet-in消息解释不正确的是（  ）。","options":"A. in_port：发送帧的端口; B. reason：发送Packet-in消息的原因; C. data：包含以太网帧的数据时使用的字段; D. buffer_id：表示OpenFlow交换机中保存的数据包的缓存ID","answer":"A"},
+{"id":145,"question":"关于OpenFlow协议中的Packet-out消息，以下描述不正确的是（  ）。","options":"A. Packet-out消息可以用于指定某一个数据包的处理方法; B. 控制器可以使用Packet-out消息，告诉交换机网络中如ARP、IGMP等数据包如何处理; C. Packet-out消息由OpenFlow控制器发出并发送到OpenFlow交换机; D. 当用于链路发现时，控制器向一个交换机发送Packet-out消息，actions为从交换机的所有端口转发","answer":"D"},
+{"id":146,"question":"关于OpenFlow协议，以下描述不正确的是（  ）。","options":"A. 通过Packet-in/Packet-out发现交换机之间的链路; B. 在OpenFlow交换机中添加、删除或修改物理端口时，需要发送Port-Status消息来通知OpenFlow控制器; C. 通过Get Config Request消息协商双方的OpenFlow版本号; D. OpenFlow控制器和OpenFlow交换机可通过发送Echo请求消息来确认二者之间是否连接、检测通信延迟、测量通信带宽等","answer":"C"},
+{"id":147,"question":"下列关于P4语言的定位描述不正确的是（  ）。","options":"A. 协议无关性; B. 目标无关性; C. 统一南向接口; D. 现场可重配置能力","answer":"C"},
+{"id":148,"question":"关于OVSDB协议描述不正确的是（  ）。","options":"A. 是一种管理配置协议，负责添加、删除、更新端口和隧道; B. OVSDB管理协议与OF-Config协议类似，都是OpenFlow交换机配置协议; C. 采用客户端/服务器模式; D. OVSDB管理协议是目前为止唯一的OpenFlow配置协议","answer":"D"},
+{"id":149,"question":"在OpenFlow交换机的Features消息中，用于唯一标识交换机的字段是（  ）。","options":"A. header; B. datapath-id; C. n_buffers; D. switch_id","answer":"B"},
+{"id":150,"question":"关于OpenFlow协议中的Port-Status消息，以下描述不正确的是（  ）。","options":"A. 在OpenFlow交换机中添加、删除或修改物理端口时，需要发送Port-Status消息来通知OpenFlow控制器; B. reason包括OFPPR_ADD（0）和OFPPR_DELETE（1）; C. Port字段描述了端口的具体信息，如端口号、端口的MAC地址、端口名称、端口配置、端口状态等; D. OFPT_PORT_STATUS：表明是Port-Status消息","answer":"B"},
+{"id":151,"question":"在OpenFlow交换机中添加、删除或修改物理端口时，需要发送（  ）消息来通知OpenFlow控制器。","options":"A. Port-Status消息; B. Role消息; C. Echo消息; D. Barrier消息","answer":"A"},
+{"id":152,"question":"OpenFlow交换机定义了三种类型的端口，分别是（  ）。","options":"A. 物理端口、逻辑端口、预留端口; B. 物理端口、虚拟端口、逻辑端口; C. 虚拟端口、预留端口、标准端口; D. 预留端口、逻辑端口、标准端口","answer":"A"}
+],
+          智能体专项: [
+{"id":1,"question":"以下关于智能体记忆系统的描述，正确的是（）。","options":"A. 记忆系统使智能体能够记住历史交互并进行连续对话; B. 记忆系统只存储用户密码; C. 记忆系统无法删除; D. 记忆系统用于缓存网页","answer":"A"},
+{"id":2,"question":"智能体的核心特征是（）。","options":"A. 能够自主感知环境并执行行动; B. 只能执行预设程序; C. 完全依赖人工操作; D. 仅用于数据分析","answer":"A"},
+{"id":3,"question":"智能体架构的三个基本要素是（）。","options":"A. 模型、工具、编排层; B. 输入、处理、输出; C. 感知、输出、行动; D. 数据、算法、算力","answer":"A"},
+{"id":4,"question":"在智能体架构中，\"模型\"组件的作用是（）。","options":"A. 作为核心决策单元的语言模型; B. 存储用户数据; C. 提供用户界面; D. 执行 API 调用","answer":"A"},
+{"id":5,"question":"在智能体架构中，\"工具\"组件的主要作用是（）。","options":"A. 弥合智能体内部能力与外部世界之间的差距; B. 进行逻辑推理; C. 存储历史信息; D. 生成用户界面","answer":"A"},
+{"id":6,"question":"在智能体架构中，\"编排层\"负责（）。","options":"A. 维护记忆、状态、推理和规划; B. 存储用户数据; C. 执行具体的 API 调用; D. 提供图形用户界面","answer":"A"},
+{"id":7,"question":"以下哪项不属于智能体编排层常用的推理技术？","options":"A. 零样本提示; B. ReAct; C. 思维链（CoT）; D. 思维树（ToT）","answer":"A"},
+{"id":8,"question":"在多智能体系统中，以下哪项不属于典型的智能体间协调模式（ ）。","options":"A. 瀑布模型; B. 层次化模式; C. 协作化模式; D. 点对点模式","answer":"A"},
+{"id":9,"question":"关于多智能体系统的特点，以下正确的是（）。","options":"A. 可以通过协作完成复杂任务; B. 只能由单个智能体独立完成任务; C. 不需要协调机制; D. 仅适用于研究领域","answer":"A"},
+{"id":10,"question":"\"人在环评估\"指的是（）。","options":"A. 人类参与评估过程; B. 完全自动化评估; C. 基于规则的评估; D. 基于统计的评估","answer":"A"},
+{"id":11,"question":"关于智能体的自主性，以下描述正确的是（）。","options":"A. 智能体必须等待明确指令才能行动; B. 智能体不能独立完成任务; C. 智能体只能执行预设程序; D. 智能体能够独立追求其目标，并主动确定后续行动","answer":"D"},
+{"id":12,"question":"智能体工具可以包括（）。","options":"A. 仅数据库; B. 仅 API 调用; C. 仅用户界面; D. 扩展、功能和数据存储","answer":"D"},
+{"id":13,"question":"关于思维链和思维树的区别，正确的是（）。","options":"A. 思维链更复杂; B. 思维树更简单; C. 两者完全相同; D. 思维链强调单条推理链，思维树强调多路径思维探索","answer":"D"},
+{"id":14,"question":"衡量智能体系统的关键指标包括（）。","options":"A. 注释数量; B. 代码行数; C. 结果和业务指标; D. 文件大小","answer":"C"},
+{"id":15,"question":"在智能体架构中，通常将记忆分为哪两种主要类型（）。","options":"A. 短期记忆和长期记忆; B. 显式记忆和隐式记忆; C. 语义记忆和情景记忆; D. 工作记忆和参考记忆","answer":"A"},
+{"id":16,"question":"智能体的长期记忆通常通过以下哪种技术实现（）。","options":"A. 数据库或向量存储; B. 模型参数微调; C. 缓存文件; D. 对话历史拼接","answer":"A"},
+{"id":17,"question":"关于智能体的记忆系统，以下描述错误的是（）。","options":"A. 记忆系统允许智能体在多轮对话中保持上下文连贯; B. 记忆系统可以存储用户偏好和历史行为; C. 记忆系统需要无限容量以保存所有历史; D. 记忆系统支持智能体在任务中断后恢复","answer":"C"},
+{"id":18,"question":"智能体互联网的核心定义是（）。","options":"A. 由大语言模型驱动的对话机器人组成的网络; B. 由自主智能体组成的数字生态系统，能够彼此发现、通信并协作完成复杂任务; C. 用于训练AI模型的分布式算力网络; D. 连接各类智能终端的物联网升级版本","answer":"B"},
+{"id":19,"question":"与传统互联网相比，智能体互联网在交互范式上的主要转变是（）。","options":"A. 从命令行界面（CLI）向图形界面（GUI）转变; B. 从WebUI、GUI向多模态MUI（多模态交互界面）转变; C. 从文本交互向语音交互转变; D. 从同步通信向异步通信转变","answer":"B"},
+{"id":20,"question":"智能体互联网中，智能体之间进行服务发现的核心依据是（）。","options":"A. 目标智能体的网络位置和通信地址; B. 智能体名片中声明的能力、接口和策略; C. 历史交互记录中积累的信任评分; D. 发起智能体自身的任务需求和偏好","answer":"B"},
+{"id":21,"question":"互联网智能体是指（）。","options":"A. 仅能运行在云端的AI程序; B. 具备互联网接入能力，能够自主执行复杂任务并与智能体及其他实体交互协作的软件系统; C. 只能执行预设指令的自动化脚本; D. 专用于网络安全的防护系统","answer":"B"},
+{"id":22,"question":"智能体与传统AI模型的本质差异在于（）。","options":"A. 是否具备自然语言理解能力; B. 是否具备“闭环执行能力”，能够将指令直接转化为实际操作; C. 是否拥有更大的参数量; D. 是否支持多轮对话","answer":"B"},
+{"id":23,"question":"智能体从“可用”迈向“可靠”需要突破的关键瓶颈不包括（）。","options":"A. 基础设施革新，搭建高性能、高安全的运行底座; B. 架构进化，从单一模型向“感知-推理-执行-自进化”闭环演进; C. 无限扩大模型的参数量; D. 治理与协议，建立统一的安全与责任框架","answer":"C"},
+{"id":24,"question":"智能体互联协议需要解决的三类接口关系是（）。","options":"A. A2A、A2U、A2T; B. C2C、C2S、C2D; C. P2P、P2C、P2S; D. B2B、B2C、B2G","answer":"A"},
+{"id":25,"question":"当前全球智能体互联协议的发展态势是（）。","options":"A. 已形成统一的全球标准; B. 处于百家争鸣的早期发展阶段，存在多种协议并存; C. 完全由一家公司垄断; D. 尚无任何组织关注此领域","answer":"B"},
+{"id":26,"question":"智能体互联协议中，负责智能体间通信的语义路由和动态匹配的协议功能是（）。","options":"A. 支持智能体意图解析，动态匹配算网资源需求; B. 仅负责IP地址分配; C. 仅负责数据加密; D. 仅负责用户认证","answer":"A"},
+{"id":27,"question":"多模态传输协议需要解决的核心问题是（）。","options":"A. 提高传输速度; B. 降低多模态数据传输的通信延迟，支持底层协议转换; C. 完全替代TCP/IP; D. 用于无线网络","answer":"B"},
+{"id":28,"question":"智能体与工具跨域发现协议的核心功能是（）。","options":"A. 建立智能体与工具之间的加密传输通道; B. 维护工具调用日志，供审计使用; C. 支持工具能力的动态注册、查询和地址解析; D. 统一所有工具的输出数据格式","answer":"C"},
+{"id":29,"question":"会话管理与调用协议在异步调用场景下的核心作用是（）。","options":"A. 统一不同智能体的会话标识格式; B. 维护会话状态机，支持任务中断后的恢复; C. 压缩会话历史数据以节省存储空间; D. 实时同步所有参与智能体的系统时钟","answer":"B"},
+{"id":30,"question":"智能体标识体系包含的两类核心标识是（）。","options":"A. MAC地址和IP地址; B. 身份标识和服务标识; C. 设备标识和用户标识; D. 公钥和私钥","answer":"B"},
+{"id":31,"question":"IPv6在支撑智能体互联网方面的重要作用是（）。","options":"A. 提升智能体间的数据传输速率; B. 提供海量地址空间支持智能体唯一标识; C. 增强智能体网络的安全防护能力; D. 优化智能体路由选择的效率","answer":"B"},
+{"id":32,"question":"智能体互联网中，名字服务发现需要支持的核心能力是（）。","options":"A. 实现智能体IP地址的快速解析; B. 兼顾语义服务信息与地址映射，支持意图驱动发现; C. 提供智能体间通信的加密认证; D. 记录所有智能体的调用日志供审计","answer":"B"},
+{"id":33,"question":"智能体互联网的业务流量结构变化主要体现在（）。","options":"A. 全部为南北流量; B. 新增大量东西向流量; C. 流量总量减少; D. 流量全部加密无法分析","answer":"B"},
+{"id":34,"question":"智能体互联网中，“提示词注入”攻击指的是（）。","options":"A. 攻击者通过物理方式破坏智能体硬件; B. 攻击者在网页或文档中嵌入隐藏指令，诱导智能体执行未授权操作; C. 智能体因计算资源不足而崩溃; D. 智能体之间的正常通信中断","answer":"B"},
+{"id":35,"question":"智能体互联网中，“混淆代理”攻击指的是（）。","options":"A. 智能体被注入恶意提示词; B. 低权限智能体诱导高权限智能体执行未授权操作; C. 智能体因幻觉产生错误输出; D. 智能体通信被中间人截获","answer":"B"},
+{"id":36,"question":"智能体身份体系面临的主要挑战是（）。","options":"A. 智能体数量太少，无需管理; B. 智能体指数级激增，传统以人为中心的静态身份体系无法应对“秒级生命”压力; C. 身份认证技术过于成熟; D. 所有智能体共享同一身份","answer":"B"},
+{"id":37,"question":"“人机共治”机制在智能体安全中的作用是（）。","options":"A. 完全替代智能体决策; B. 在关键操作节点保留人工确认与监督; C. 用于数据标注; D. 提升系统效率","answer":"B"},
+{"id":38,"question":"智能体“最小权限原则”的含义是（）。","options":"A. 仅授予智能体完成任务所必需的最小权限集合; B. 根据智能体的历史行为动态调整其权限范围; C. 基于角色模型为同类智能体分配相同权限; D. 所有权限需经过人类审批后方可生效","answer":"A"},
+{"id":39,"question":"智能体全链路可观测性的价值在于（）。","options":"A. 实时监控智能体的性能指标，优化响应速度; B. 记录从用户意图到工具调用的完整决策链路，支持审计与溯源; C. 采集用户交互数据，用于智能体行为训练与优化; D. 可视化展示智能体的调用拓扑，辅助系统运维","answer":"B"},
+{"id":40,"question":"智能体从技术探索迈向规模化应用面临的关键挑战是（）。","options":"A. 模型推理能力不足，难以处理复杂任务; B. 技术成熟度、安全治理与产业生态协同; C. 缺乏杀手级应用场景，用户接受度不高; D. 高质量训练数据匮乏，模型泛化能力有限","answer":"B"},
+{"id":41,"question":"构建可信智能体互联生态需要的基础要素是（）。","options":"A. 技术创新突破、算力基础设施、应用场景拓展; B. 统一协议标准、开放产业生态、健全治理框架; C. 政策法规引导、行业标杆示范、用户接受度提升; D. 安全技术保障、隐私保护机制、责任追溯体系","answer":"B"},
+{"id":42,"question":"MCP协议在智能体架构中的主要作用是（）。","options":"A. 为智能体提供统一的工具调用接口标准; B. 优化大语言模型的推理速度和效率; C. 管理智能体之间的会话状态和生命周期; D. 存储智能体的长期记忆和上下文信息","answer":"A"},
+{"id":43,"question":"在智能体架构中，\"大脑\"组件的主要作用是（）。","options":"A. 负责与用户交互; B. 负责存储数据; C. 负责推理、规划和决策; D. 负责执行具体任务","answer":"C"},
+{"id":44,"question":"智能体的\"大脑\"组件通常包含的核心功能是（）。","options":"A. 用户界面和日志; B. API接口和数据库; C. 网络和安全模块; D. 语言模型和推理引擎","answer":"D"},
+{"id":45,"question":"在智能体架构中，\"双手\"组件的主要作用是（）。","options":"A. 负责用户界面; B. 负责思考和推理; C. 负责存储记忆; D. 执行具体任务和调用工具","answer":"D"},
+{"id":46,"question":"关于智能体的定义，以下正确的是（）。","options":"A. 用于数据分析的系统; B. 依赖人工操作的系统; C. 能够自主感知环境并执行行动的系统; D. 执行预设程序的系统","answer":"C"},
+{"id":47,"question":"函数调用在智能体中的作用是（）。","options":"A. 减少内存使用; B. 增强图形渲染能力; C. 提高语言模型的计算速度; D. 使智能体能够调用外部工具和 API","answer":"D"},
+{"id":48,"question":"在智能体系统中，\"上下文\"指的是（）。","options":"A. 系统的硬件配置; B. 用户的个人信息; C. 当前对话或任务的相关信息和状态; D. 网络的拓扑结构","answer":"C"},
+{"id":49,"question":"智能体的\"推理\"能力指的是（）。","options":"A. 高效存储数据; B. 基于已有信息进行逻辑推导和决策; C. 快速执行代码; D. 准确渲染图形","answer":"B"},
+{"id":50,"question":"A2A协议主要用于（）。","options":"A. 保护智能体的安全; B. 优化智能体的性能; C. 连接智能体和数据库; D. 实现不同智能体之间的通信和协作","answer":"D"},
+{"id":51,"question":"RAG技术的主要作用是（）。","options":"A. 通过检索外部知识库来增强语言模型的生成能力; B. 提高模型的训练速度; C. 减少模型的参数量; D. 优化模型的架构","answer":"A"},
+{"id":52,"question":"提示在智能体系统中的作用是（）。","options":"A. 启动系统程序; B. 配置网络参数; C. 设置用户权限; D. 向语言模型提供任务指令和上下文信息","answer":"D"},
+{"id":53,"question":"与传统的语言模型相比，智能体的主要优势在于（）。","options":"A. 响应速度更快; B. 具有更大的参数量; C. 训练数据更多; D. 能够自主执行行动和调用工具","answer":"D"},
+{"id":54,"question":"多智能体系统的主要优势是（）。","options":"A. 实现更简单; B. 可以通过协作完成单个智能体无法处理的复杂任务; C. 成本更低; D. 占用资源更少","answer":"B"},
+{"id":55,"question":"智能体在生产环境中部署时，需要重点考虑的因素是（）。","options":"A. 安全性、隐私保护和可观测性; B. 代码行数; C. 界面美观程度; D. 开发团队规模","answer":"A"},
+{"id":56,"question":"智能体的“自主性”指的是（）。","options":"A. 可以修改自身的代码; B. 可以无限扩展能力; C. 能够创造新的知识; D. 能够在无人干预的情况下独立完成任务","answer":"D"},
+{"id":57,"question":"智能体与传统软件的主要区别在于（）。","options":"A. 智能体界面更美观; B. 智能体能够自主决策并执行行动; C. 智能体运行速度更快; D. 智能体代码更简洁","answer":"B"}
+],
+          大模型专项: [
+{"id":1,"question":"下列哪个选项正确描述了大模型的参数量级（）。","options":"A. 几千; B. 几万到数十亿; C. 几百; D. 几十","answer":"B"},
+{"id":2,"question":"下列哪个选项用来确保AI的公平性（）。","options":"A. 让模型尽可能复杂以提高性能; B. 仅使用公开的数据集进行训练; C. 对模型的偏见进行检测和纠正; D. 定期更新模型以适应新数据","answer":"C"},
+{"id":3,"question":"大模型通常是指（）领域，具有大量参数的人工智能模型。","options":"A. 深度学习; B. 机器学习; C. 强化学习; D. 联邦学习","answer":"A"},
+{"id":4,"question":"下列哪个选项正确描述了大模型的可解释性（）。","options":"A. 很好; B. 较差; C. 正在不断提高; D. 以上都不正确","answer":"C"},
+{"id":101,"question":"下列哪种技术有助于减轻基于提示学习中的偏见（）。","options":"A. 微调; B. 数据增强; C. 提示校准; D. 梯度裁剪","answer":"C"},
+{"id":102,"question":"下列哪个选项负责在Transformer模型中处理输入序列的位置信息（）。","options":"A. 编码器; B. 位置编码; C. 解码器; D. 注意力机制","answer":"B"},
+{"id":103,"question":"大模型训练中，为了解决长文本处理的问题，通常采用以下哪种方法（）。","options":"A. 使用固定长度的文本片段; B. 增加上下文窗口大小; C. 缩短文本长度; D. 忽略长文本","answer":"B"},
+{"id":104,"question":"自注意力机制的特点有哪些（）。","options":"A. 可并行计算; B. 擅长建模长距离依赖; C. 结构相对简单; D. 引入大量卷积运算; E. 依赖递归计算过程","answer":"A B C"},
+{"id":5,"question":"关于多头注意力机制，以下说法正确的是（）。","options":"A. 所有注意力头参数完全共享; B. 各头在不同子空间中独立学习; C. 能捕捉多样特征表示; D. 增加了网络深度; E. 支持并行计算","answer":"B C E"},
+{"id":6,"question":"Transformer架构中包含哪些重要组成部分（）。","options":"A. 自注意力层; B. 残差连接; C. 前馈全连接网络; D. 循环门控单元; E. 卷积池化结构","answer":"A B C"},
+{"id":7,"question":"大规模数据预处理的常用技术包括哪些（）。","options":"A. 数据清洗与缺失值处理; B. 特征标准化与归一化; C. 模型蒸馏; D. 数据增强; E. 权重初始化","answer":"A B D"},
+{"id":8,"question":"关于自监督学习的优势，说法正确的是（）。","options":"A. 可减少对人工标注数据的依赖; B. 在低资源场景中表现出色; C. 通常需要大量标注数据; D. 无法用于图像等非文本任务; E. 支持跨任务迁移能力","answer":"A B E"},
+{"id":9,"question":"模型压缩技术包括哪些（）。","options":"A. 模型剪枝; B. 学习率调整; C. 权重量化; D. 添加注意力机制; E. 知识蒸馏","answer":"A C E"},
+{"id":10,"question":"下列哪些是常用的模型评估指标（）。","options":"A. 准确率; B. F1分数; C. 学习率; D. 训练轮数; E. AUC曲线","answer":"A B E"},
+{"id":11,"question":"在大模型训练中，以下哪些因素会影响模型的收敛速度（）。","options":"A. 学习率; B. 批量大小; C. 模型复杂度; D. 训练数据的多样性","answer":"A B C D"},
+{"id":12,"question":"在大模型训练中，以下哪个选项是模型过拟合的常见表现（）。","options":"A. 训练损失持续降低; B. 验证损失持续增加; C. 训练准确率持续增加; D. 验证准确率持续降低","answer":"B D"},
+{"id":13,"question":"下列关于BERT的描述正确的是（）。","options":"A. 一种基于编码器架构的模型; B. 一种基于Transformer的预训练模型; C. 一种序列到序列的模型; D. 一种词向量模型","answer":"A B"},
+{"id":14,"question":"在大模型训练中，以下哪个选项是模型调优常用的方法（）。","options":"A. 调整学习率; B. 增加数据增强; C. 改变模型架构; D. 增加正则化强度","answer":"A B D"},
+{"id":15,"question":"在大模型训练中，以下哪个选项是模型部署时需要考虑的因素（）。","options":"A. 模型大小; B. 推理速度; C. 能耗; D. 部署成本","answer":"A B C D"},
+{"id":16,"question":"下列哪个选项属于大语言模型的核心特征（）。","options":"A. 基于Transformer等深度架构的多层神经网络; B. 无需大量训练数据; C. 参数规模庞大; D. 具备多任务泛化能力","answer":"A C D"},
+{"id":17,"question":"下列关于LoRA技术说法正确的是（）。","options":"A. 与全参数微调相比计算成本更低; B. 适用于算力资源受限的场景; C. 与全参数微调相比增加了训练时长; D. 需要重新训练整个基础模型的权重; E. 属于提示工程的一种变体","answer":"A B"},
+{"id":18,"question":"下列哪些技术可以用于大模型训练优化（）。","options":"A. 混合精度训练; B. 分布式训练; C. 模型并行; D. 比对学习","answer":"A B C"},
+{"id":19,"question":"以下哪些技术用于大模型推理优化（）。","options":"A. 量化; B. 知识蒸馏; C. 稀疏矩阵技术; D. 增量训练","answer":"A B C"},
+{"id":20,"question":"大模型基础架构中包含哪些层（）。","options":"A. 词嵌入层和位置嵌入层; B. 多头注意力层; C. 残差连接和层归一化层; D. 前馈神经网络层; E. 残差连接和批归一化层","answer":"A B C D"},
+{"id":21,"question":"下列哪些属于国外大模型产品（）。","options":"A. ChatGPT; B. Gemini; C. Kimi; D. Sora","answer":"A B D"},
+{"id":22,"question":"下列哪些属于国内大模型产品（）。","options":"A. DeepSeek; B. Kimi; C. 豆包; D. 智谱清言","answer":"A B C D"},
+{"id":23,"question":"下列哪些选项属于前馈神经网络在Transformer中的计算过程（）。","options":"A. 升维线性变换; B. 多头注意力计算; C. 非线性激活; D. 残差连接; E. 降维线性变化","answer":"A C E"},
+{"id":24,"question":"下列哪些选项是大语言模型训练数据的特点（）。","options":"A. 大规模; B. 高质量; C. 多样性; D. 低密度","answer":"A B C"},
+{"id":25,"question":"当使用语言模型进行文本生成时，以下哪些选项是提高结果相关性的有效策略()。","options":"A. 增加prompt的具体性和明确性; B. 减少生成文本的长度; C. 使用更大的语言模型; D. 在prompt中明确指定所需信息的类型","answer":"A D"},
+{"id":26,"question":"大模型面临的挑战主要包括（）。","options":"A. 数据隐私; B. 计算资源需求大; C. 完全没有误差; D. 伦理道德问题","answer":"A B D"},
+{"id":27,"question":"开源大模型的好处包括（）。","options":"A. 促进技术共享; B. 提供模型安全性; C. 降低开发成本; D. 推动创新","answer":"A C D"},
+{"id":28,"question":"大模型在自然语言处理中的应用主要包括（）。","options":"A. 文本生成; B. 图像识别; C. 机器翻译; D. 问答系统","answer":"A C D"},
+{"id":29,"question":"Transformer模型中，位置编码是为了引入序列中各个词的位置信息。","answer":"对"},
+{"id":30,"question":"模型压缩后目的是降低模型的存储开销，不会影响推理的准确率。","answer":"错"},
+{"id":31,"question":"多头注意力机制通过多个注意力头来捕捉不同维度的特征信息。","answer":"对"},
+{"id":32,"question":"在数据预处理中，数据增强技术仅适用于图像数据。","answer":"错"},
+{"id":33,"question":"学习率过大会导致模型训练震荡或不收敛。","answer":"对"},
+{"id":34,"question":"在大模型训练中，增加模型层数一定能提高模型性能。","answer":"错"},
+{"id":35,"question":"在大模型训练中，增加训练数据量一定能提高模型性能。","answer":"错"},
+{"id":36,"question":"在大模型训练中，早停可以有效地防止过拟合。","answer":"对"},
+{"id":37,"question":"在大模型训练中，模型并行化可以减少模型训练时间。","answer":"对"},
+{"id":38,"question":"在大模型训练中，模型压缩一定会降低模型性能。","answer":"错"},
+{"id":39,"question":"位置编码是固定的，不可以学习得到。","answer":"错"},
+{"id":40,"question":"Transformer架构中使用的是批归一化层。","answer":"错"},
+{"id":41,"question":"Transformer中使用正弦和余弦函数为每一个位置生成编码信息。","answer":"对"},
+{"id":42,"question":"大模型是通过“大数据+大算力+强算法”相结合来模拟人类思维和创造力的人工智能算法。","answer":"对"},
+{"id":43,"question":"原生Transformer模型中将每个Token嵌入转换为768维向量。","answer":"错"},
+{"id":44,"question":"Transformer利用注意力机制完成对源语言序列和目标语言序列的全局依赖建模。","answer":"对"},
+{"id":45,"question":"编码器-解码器交叉注意力层的Q、K、V参数均来自解码器自注意力层输出。","answer":"错"},
+{"id":46,"question":"大模型知识库在文本分类任务中，可以自动学习并提取有用的特征。","answer":"对"},
+{"id":47,"question":"生成式语言模型通过训练数据来学习用户的行为模式，从而预测用户的下一步操作。","answer":"错"},
+{"id":48,"question":"在进行自回归解码的时候，新生成的Token会加入序列，一起作为下一次解码的输入。","answer":"对"},
+{"id":49,"question":"在Transformer模型中，前馈神经网络层先进行升维是为了实现更复杂的非线性特征交互，增强模型表达能力。","answer":"对"},
+{"id":50,"question":"大模型训练对硬件资源要求很高，GPU显存容量是直接影响模型训练速度的关键因素。","answer":"对"},
+{"id":51,"question":"Masked Language Model(MLM)是自监督学习的一种形式。","answer":"对"},
+{"id":52,"question":"在GPT系列的模型中，GPT-3是首次实现了文本模态到图文双模态的转变的模型。","answer":"错"},
+{"id":53,"question":"层级剪枝是模型压缩中的一种结构化方法。","answer":"对"},
+{"id":54,"question":"Transformer中用于建模词与词之间关系的机制是（）。","options":"A. 卷积操作; B. 循环神经网络; C. 自注意力机制; D. 门控单元","answer":"C"},
+{"id":55,"question":"下列哪个选项不是大模型的核心组件（）。","options":"A. 编码器-解码器结构; B. 残差连接; C. 决策树结构; D. 多层感知机","answer":"C"},
+{"id":56,"question":"自监督学习的典型预训练任务不包括（）。","options":"A. 遮盖语言建模（MLM）; B. 下一句预测（NSP）; C. 图像分类; D. 对比学习","answer":"C"},
+{"id":57,"question":"下列哪个选项是学习率衰减的主要目的（）。","options":"A. 增加训练轮数; B. 提高训练精度; C. 降低过拟合风险; D. 稳定模型收敛过程","answer":"D"},
+{"id":58,"question":"以下哪个选项属于模型微调方法（）。","options":"A. 训练全部参数; B. 冻结部分层，仅训练顶部层; C. 增加训练数据; D. 数据清洗","answer":"B"},
+{"id":59,"question":"在模型评估中，主要用于衡量分类任务性能的指标是（）。","options":"A. 平均绝对误差; B. 均方误差; C. 准确率; D. R方值","answer":"C"},
+{"id":60,"question":"关于模型训练监控，下列说法正确的是（）。","options":"A. 只需要监控训练集上的指标; B. 验证集指标波动不影响模型; C. 只要loss降低，模型就一定更好; D. 应该同时监控训练和验证集指标","answer":"D"},
+{"id":61,"question":"当top_p=0.5时，模型会选择哪些Token（）。","options":"A. 所有可能的Token; B. 累计概率超过0.9的Token; C. 累计概率达到0.5的多个Token; D. 仅最高概率的单个Token","answer":"C"},
+{"id":62,"question":"在大模型训练中，以下哪个个因素对模型性能影响最大（）。","options":"A. 训练数据量; B. 模型迭代次数; C. 训练时间; D. 计算资源","answer":"A"},
+{"id":63,"question":"以下哪个选项不是大模型训练中常用的优化算法（）。","options":"A. SGD; B. Adam; C. RMSprop; D. K-means","answer":"D"},
+{"id":64,"question":"大模型中的Decoder部分主要用于（）。","options":"A. 解码生成输出文本; B. 编码输入文本; C. 更新模型参数; D. 计算损失函数","answer":"A"},
+{"id":65,"question":"以下哪个选项不是大模型训练中常用的正则化技术（）。","options":"A. Dropout; B. L1正则化; C. L2正则化; D. 最大池化","answer":"D"},
+{"id":66,"question":"在大模型训练中，以下哪个选项不是超参数（）。","options":"A. 学习率; B. 批量大小; C. 模型层数; D. 输入数据","answer":"D"},
+{"id":67,"question":"在大模型训练过程中，以下哪个选项不是3D并行化方法（）。","options":"A. 数据并行; B. 模型并行; C. 流水线并行; D. 随机梯度下降","answer":"D"},
+{"id":68,"question":"下列哪个选项是用来评估一个大模型的伦理影响（）。","options":"A. 通过测量模型的准确率; B. 通过查看模型适用的编程语言; C. 通过对其决策过程的透明度进行审查; D. 通过测试其在不同硬件上的表现","answer":"C"},
+{"id":69,"question":"在大模型训练中，以下哪个选项不是模型压缩的目的（）。","options":"A. 减少模型大小; B. 提高推理速度; C. 增加模型复杂度; D. 降低能耗","answer":"C"},
+{"id":70,"question":"在大模型训练中，以下哪个选项不是模型微调的应用场景（）。","options":"A. 迁移学习; B. 领域适应; C. 模型压缩; D. 任务适应","answer":"C"},
+{"id":71,"question":"大模型训练过程通常包括哪三个阶段（）。","options":"A. 数据清洗、模型构建、性能评估; B. 预训练、有监督微调、基于人类反馈的强化学习; C. 模型初始化、无监督学习、模型测试; D. 特征选择、模型训练、结果验证","answer":"B"},
+{"id":72,"question":"在构建大模型时，以下哪个因素不是性能优化的关键（）。","options":"A. 模型的规模; B. 训练数据质量; C. 模型的复杂度; D. 模型的通用能力","answer":"D"},
+{"id":73,"question":"对中文语料样本来说，为了便于模型理解，第一步是将句子拆分为词元，词元又称为（）。","options":"A. Embedding; B. 词嵌入; C. Token; D. 基础语料","answer":"C"},
+{"id":74,"question":"大模型训练大体分为预训练、（）和对齐学习。","options":"A. 继续训练; B. 参数调优; C. 无监督微调; D. 有监督微调","answer":"D"},
+{"id":75,"question":"下列哪个选项描述的是大模型在海量无标签数据中学习语言规律和语义关联，从而获得通用语言理解能力（）。","options":"A. 预训练; B. 无监督微调; C. 参数微调; D. 分布式推理加速","answer":"A"},
+{"id":76,"question":"下列哪个选项是提示工程的主要目的（）。","options":"A. 删除模型中的冗余参数; B. 训练模型从零开始学习新任务; C. 减少模型对计算资源的需求; D. 通过设计输入指令引导模型生成符合期望的输出","answer":"D"},
+{"id":77,"question":"下列哪个选项描述的技术可以缓解大模型的“偏见”（）。","options":"A. 提供模型复杂度; B. 增加训练数据量; C. 增加模型公平性评估; D. 减少训练轮次","answer":"C"},
+{"id":78,"question":"下列哪个选项描述的是思维链的主要作用（）。","options":"A. 分解复杂任务为可执行步骤; B. 提升模型训练速度; C. 减少模型参数量; D. 增加模型视觉识别能力","answer":"A"},
+{"id":79,"question":"下列哪个选项不属于大语言模型的核心特征（）。","options":"A. 基于Transformer等深度架构的多层神经网络; B. 无需大量训练数据; C. 参数规模庞大; D. 具备多任务泛化能力","answer":"B"},
+{"id":80,"question":"大模型训练数据主要来源于（）。","options":"A. 随机生成; B. 人工编造; C. 互联网等多渠道; D. 个人想象","answer":"C"},
+{"id":81,"question":"大模型微调的目的是（）。","options":"A. 让模型更通用; B. 让模型适用于特定任务; C. 降低模型性能; D. 改变模型架构","answer":"B"},
+{"id":82,"question":"大模型训练中优化器的作用是（）。","options":"A. 加速模型训练; B. 存储数据; C. 生成新数据; D. 可视化","answer":"A"},
+{"id":83,"question":"下列哪个选项不是大模型的性能评估指标（）。","options":"A. 准确率; B. 召回率; C. 响应时间; D. 像素值","answer":"D"},
+{"id":84,"question":"以下哪个选项不能用于确定两个词的相关性（）。","options":"A. 互信息; B. 最大熵; C. 卡方检验; D. 最大似然比","answer":"B"},
+{"id":85,"question":"下列关于大语言模型架构类型描述正确的是（）。","options":"A. 编码器-解码器结构; B. 解码端（Decoder-Only); C. 编码端（Encoder-Only); D. 以上都是","answer":"D"},
+{"id":86,"question":"{1, 2, 3, 4, -9, 0}的L1范数是（）。","options":"A. 6; B. 1; C. 19; D. 111","answer":"C"},
+{"id":87,"question":"在数据预处理中，数据清洗的主要目的是（）。","options":"A. 去除噪声、填补缺失值、修正错误数据; B. 将数据转换为数值格式; C. 对数据进行分类标注; D. 提高数据维度以增强模型性能","answer":"A"},
+{"id":88,"question":"大语言模型在处理复杂文本时的主要依据是（）。","options":"A. 预先设定的规则; B. 大量文本数据的学习; C. 特定的算法逻辑; D. 人工输入指令","answer":"B"},
+{"id":89,"question":"在处理自然语言任务时，下列哪个选项是常用的预训练语言模型（）。","options":"A. BERT; B. YOLO; C. ResNet; D. VGG","answer":"A"},
+{"id":90,"question":"下列哪种技术能提高大模型的泛化能力（）。","options":"A. 过拟合; B. 正则化; C. 欠拟合; D. 数据处理","answer":"B"},
+{"id":91,"question":"下列哪个算法常用于大模型预训练（）。","options":"A. 强化学习; B. 量化; C. 梯度下降; D. 牛顿法","answer":"C"},
+{"id":92,"question":"下列哪个选项是Google的BERT模型采用的模型架构（）。","options":"A. 编码器-解码器架构; B. 因果解码器架构; C. 编码器架构; D. 前缀解码器架构","answer":"C"},
+{"id":93,"question":"ChatGPT是（）公司的产品。","options":"A. Google; B. Open AI; C. 微软; D. 百度","answer":"B"},
+{"id":94,"question":"在Embedding模型中，每个文本的向量表示是如何得到的（）。","options":"A. 随机生成; B. 过词频统计; C. 通过模型训练学习得到的; D. 由人工标注","answer":"C"},
+{"id":95,"question":"下列哪个选项体现了大语言模型的涌现能力（）。","options":"A. 只在特定任务中表现出色; B. 展现出未被明确教导的能力; C. 仅限于语言生成; D. 只能通过人类标注数据学习","answer":"B"},
+{"id":96,"question":"下列哪项不是用于将大语言模型与人类价值观和偏好对齐的技术（）。","options":"A. RLHF; B. Direct Preference Optimization; C. Data Augmentation; D. Proximal Policy Optimization","answer":"C"},
+{"id":97,"question":"下列哪个选项负责在Transformer模型中处理输入序列的位置信息（）。","options":"A. 编码器; B. 位置编码; C. 解码器; D. 注意力机制","answer":"B"},
+{"id":98,"question":"大模型训练中，为了解决长文本处理的问题，通常采用以下哪种方法（）。","options":"A. 使用固定长度的文本片段; B. 增加上下文窗口大小; C. 缩短文本长度; D. 忽略长文本","answer":"B"},
+{"id":99,"question":"自注意力机制的特点有哪些（）。","options":"A. 可并行计算; B. 擅长建模长距离依赖; C. 结构相对简单; D. 引入大量卷积运算; E. 依赖递归计算过程","answer":"A B C"},
+{"id":100,"question":"关于多头注意力机制，以下说法正确的是（）。","options":"A. 所有注意力头参数完全共享; B. 各头在不同子空间中独立学习; C. 能捕捉多样特征表示; D. 增加了网络深度; E. 支持并行计算","answer":"B C E"}
+]
+
+};
+
+      function getBaseBankNames() {
+          return Object.keys(questionBanks).filter(name => name !== '综合练习');
+      }
+
+      function buildComprehensiveBank() {
+          const merged = [];
+          getBaseBankNames().forEach(bankName => {
+              const list = Array.isArray(questionBanks[bankName]) ? questionBanks[bankName] : [];
+              list.forEach((q, idx) => {
+                  merged.push({
+                      ...q,
+                      __sourceBank: bankName,
+                      __sourceIndex: idx
+                  });
+              });
+          });
+          questionBanks['综合练习'] = merged;
+      }
+
+      buildComprehensiveBank();
+
+      function getBankQuestionCount(bankName) {
+          const list = questionBanks[bankName];
+          return Array.isArray(list) ? list.length : 0;
+      }
+
+      function updateBankButtonCounts() {
+          const countMap = {
+              'bank-count-mixed': '综合练习',
+              'bank-count-ai': '人工智能专项',
+              'bank-count-p4': 'P4专项题库',
+              'bank-count-cloud': '云计算专项',
+              'bank-count-network': '计算机网络专项',
+              'bank-count-sdn': '软件定义专项题库',
+              'bank-count-agent': '智能体专项',
+              'bank-count-llm': '大模型专项'
+          };
+
+          Object.entries(countMap).forEach(([elementId, bankName]) => {
+              const el = document.getElementById(elementId);
+              if (el) {
+                  el.textContent = `${getBankQuestionCount(bankName)}题`;
+              }
+          });
+      }
+
+      // 当前选择的题库和其他变量
+    let selectedBank = '人工智能专项'; // 默认题库
+    let currentSubject = '人工智能专项'; // 当前题库
+      let originalQuestions = questionBanks[selectedBank];
+
+      // 全局变量
+      let shuffledQuestions = [];
+      let userAnswers = {};
+      let results = {};
+      let usedQuestionIndices = [];
+      let currentMode = ''; // 当前模式：'exam' 或 'practice'
+      
+      // 作答计时器变量
+      let timerInterval;
+      let startTime = null; // 记录考试开始时间
+
+      // 密码保护逻辑
+      const password = '101';
+    const trustedDeviceKey = 'bep1_trusted_device_v1';
+      const passwordProtection = document.getElementById('password-protection');
+      const bankSelection = document.getElementById('bank-selection');
+      const memorySelection = document.getElementById('memory-selection');
+      const modeSelection = document.getElementById('mode-selection');
+      const questionCountSelection = document.getElementById('question-count-selection');
+      const passwordInput = document.getElementById('password-input');
+      const passwordSubmit = document.getElementById('password-submit');
+      const errorMessage = document.getElementById('error-message');
+    const bankSearchInput = document.getElementById('bank-search-input');
+    const bankSearchMeta = document.getElementById('bank-search-meta');
+    const bankSearchResults = document.getElementById('bank-search-results');
+
+    updateBankButtonCounts();
+
+      // 主题切换功能
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = themeToggle.querySelector('i');
+      
+      themeToggle.addEventListener('click', function() {
+          document.body.classList.toggle('dark-theme');
+          if(document.body.classList.contains('dark-theme')) {
+              themeIcon.className = 'fas fa-sun';
+          } else {
+              themeIcon.className = 'fas fa-moon';
+          }
+      });
+
+      function isTrustedDevice() {
+          try {
+              return localStorage.getItem(trustedDeviceKey) === '1';
+          } catch (e) {
+              return false;
+          }
+      }
+
+      function markTrustedDevice() {
+          try {
+              localStorage.setItem(trustedDeviceKey, '1');
+          } catch (e) {
+              // 忽略存储不可用场景，仍允许本次登录
+          }
+      }
+
+      function showBankSelectionDirectly() {
+          errorMessage.style.display = 'none';
+          passwordProtection.classList.add('hidden');
+          bankSelection.classList.remove('hidden');
+      }
+
+      if (isTrustedDevice()) {
+          showBankSelectionDirectly();
+      }
+
+      passwordSubmit.addEventListener('click', function() {
+          const inputPassword = passwordInput.value.trim(); // 去除前后空格
+          if (inputPassword === password) {
+              markTrustedDevice();
+              showBankSelectionDirectly();
+          } else {
+              errorMessage.style.display = 'block';
+              passwordInput.value = '';
+              passwordInput.focus();
+          }
+      });
+      
+      // 回车提交密码
+      passwordInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter' || e.keyCode === 13) {
+              passwordSubmit.click();
+          }
+      });
+
+      function selectBank(bankName) {
+          if (!Array.isArray(questionBanks[bankName]) || questionBanks[bankName].length === 0) {
+              alert(`题库“${bankName}”为空或不存在`);
+              return;
+          }
+          selectedBank = bankName;
+          currentSubject = bankName;
+          originalQuestions = questionBanks[selectedBank];
+          bankSelection.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+      }
+
+      const bankBtnMap = {
+          'mixed-bank-btn': '综合练习',
+          'ai-bank-btn': '人工智能专项',
+          'p4-bank-btn': 'P4专项题库',
+          'cloud-bank-btn': '云计算专项',
+          'network-bank-btn': '计算机网络专项',
+          'sdn-bank-btn': '软件定义专项题库',
+          'agent-bank-btn': '智能体专项',
+          'llm-bank-btn': '大模型专项'
+      };
+
+      Object.entries(bankBtnMap).forEach(([buttonId, bankName]) => {
+          const button = document.getElementById(buttonId);
+          if (button) {
+              button.addEventListener('click', function() {
+                  selectBank(bankName);
+              });
+          }
+      });
+
+      function createBankSearchIndex() {
+          const items = [];
+          getBaseBankNames().forEach(bankName => {
+              const list = Array.isArray(questionBanks[bankName]) ? questionBanks[bankName] : [];
+              list.forEach((q, idx) => {
+                  const questionText = String(q.question || '');
+                  const optionsText = String(q.options || '');
+                  const answerText = String(q.answer || '');
+                  items.push({
+                      bank: bankName,
+                      index: idx,
+                      id: q.id,
+                      question: questionText,
+                      options: optionsText,
+                      answer: answerText,
+                      searchText: `${questionText} ${optionsText} ${answerText}`.toLowerCase()
+                  });
+              });
+          });
+          return items;
+      }
+
+      const bankSearchIndex = createBankSearchIndex();
+
+      function renderBankSearchResults(keyword) {
+          if (!bankSearchInput || !bankSearchMeta || !bankSearchResults) return;
+
+          const raw = String(keyword || '').trim();
+          if (!raw) {
+              bankSearchMeta.style.display = 'none';
+              bankSearchResults.style.display = 'none';
+              bankSearchResults.innerHTML = '';
+              return;
+          }
+
+          const lower = raw.toLowerCase();
+          const matched = bankSearchIndex.filter(item => item.searchText.includes(lower));
+          const displayList = matched.slice(0, 100);
+
+          bankSearchMeta.style.display = 'block';
+          bankSearchMeta.textContent = `检索到 ${matched.length} 条，显示前 ${displayList.length} 条`;
+
+          bankSearchResults.innerHTML = '';
+          bankSearchResults.style.display = 'block';
+
+          if (displayList.length === 0) {
+              const empty = document.createElement('div');
+              empty.style.padding = '10px 12px';
+              empty.style.color = '#7f8c8d';
+              empty.textContent = '未找到匹配题目';
+              bankSearchResults.appendChild(empty);
+              return;
+          }
+
+          displayList.forEach(item => {
+              const row = document.createElement('button');
+              row.type = 'button';
+              row.style.display = 'block';
+              row.style.width = '100%';
+              row.style.border = 'none';
+              row.style.background = 'transparent';
+              row.style.textAlign = 'left';
+              row.style.padding = '10px 12px';
+              row.style.borderBottom = '1px solid #eef3f8';
+              row.style.cursor = 'pointer';
+
+              const title = document.createElement('div');
+              title.style.fontSize = '12px';
+              title.style.color = '#6b7c93';
+              title.textContent = `${item.bank} · 题号 ${item.id ?? item.index + 1}`;
+
+              const content = document.createElement('div');
+              content.style.marginTop = '4px';
+              content.style.color = '#2c3e50';
+              content.style.lineHeight = '1.45';
+              content.textContent = item.question;
+
+              const options = document.createElement('div');
+              options.style.marginTop = '6px';
+              options.style.fontSize = '12px';
+              options.style.color = '#5d6d7e';
+              options.style.lineHeight = '1.5';
+              options.textContent = `选项：${item.options || '（无）'}`;
+
+              const answer = document.createElement('div');
+              answer.style.marginTop = '4px';
+              answer.style.fontSize = '12px';
+              answer.style.color = '#27ae60';
+              answer.style.fontWeight = '600';
+              answer.textContent = `答案：${item.answer || '（无）'}`;
+
+              row.appendChild(title);
+              row.appendChild(content);
+              row.appendChild(options);
+              row.appendChild(answer);
+
+              row.addEventListener('click', function() {
+                  selectBank(item.bank);
+              });
+
+              bankSearchResults.appendChild(row);
+          });
+      }
+
+      if (bankSearchInput) {
+          bankSearchInput.addEventListener('input', function() {
+              renderBankSearchResults(this.value);
+          });
+      }
+
+      // 模式选择层返回题库选择按钮
+      document.getElementById('mode-back-btn').addEventListener('click', function() {
+          modeSelection.classList.add('hidden');
+          bankSelection.classList.remove('hidden');
+      });
+
+      // 大题记忆返回按钮
+      const memoryBackBtn = document.getElementById('memory-back-btn');
+      if (memoryBackBtn && memorySelection) {
+          memoryBackBtn.addEventListener('click', function() {
+              memorySelection.classList.add('hidden');
+              modeSelection.classList.remove('hidden');
+          });
+      }
+
+      // 大题记忆模式按钮
+      const memoryModeBtn = document.getElementById('memory-mode-btn');
+      if (memoryModeBtn) {
+          memoryModeBtn.addEventListener('click', function() {
+              modeSelection.classList.add('hidden');
+              showMemorySelection();
+          });
+      }
+
+      // 显示大题记忆界面
+      function showMemorySelection() {
+          if (!memorySelection) return;
+          memorySelection.classList.remove('hidden');
+          generateMemoryList();
+      }
+
+      // 生成大题记忆列表
+      function generateMemoryList() {
+          const memoryList = document.getElementById('memory-list');
+          if (!memoryList) return;
+          memoryList.innerHTML = '';
+
+          if (typeof memoryQuestionBanks === 'undefined') {
+              memoryList.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">记忆题库未启用</div>';
+              return;
+          }
+          
+          // 从独立的大题题库获取题目
+          const memoryQuestions = memoryQuestionBanks[selectedBank] || [];
+          
+          if (memoryQuestions.length === 0) {
+              memoryList.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">该题库暂无大题记忆题目</div>';
+              return;
+          }
+          
+          memoryQuestions.forEach((q, index) => {
+              const memoryItem = document.createElement('div');
+              memoryItem.className = 'memory-item';
+              
+              memoryItem.innerHTML = `
+                  <div class="memory-question">
+                      <strong>大题 ${index + 1}：</strong>${q.question}
+                  </div>
+                  <button class="memory-toggle-btn" data-index="${index}">
+                      <i class="fas fa-chevron-down"></i>
+                      <span>点击查看答案</span>
+                  </button>
+                  <div class="memory-answer" id="memory-answer-${index}">
+                      <div class="memory-answer-content">
+                          <i class="fas fa-lightbulb"></i> <strong>参考答案：</strong><br><br>${q.answer}
+                      </div>
+                  </div>
+              `;
+              memoryList.appendChild(memoryItem);
+          });
+          
+          // 绑定展开/收起事件
+          document.querySelectorAll('.memory-toggle-btn').forEach(btn => {
+              btn.addEventListener('click', function() {
+                  const index = this.getAttribute('data-index');
+                  const answerDiv = document.getElementById(`memory-answer-${index}`);
+                  const isShowing = answerDiv.classList.contains('show');
+                  
+                  if (isShowing) {
+                      answerDiv.classList.remove('show');
+                      this.classList.remove('active');
+                      this.querySelector('span').textContent = '点击查看答案';
+                  } else {
+                      answerDiv.classList.add('show');
+                      this.classList.add('active');
+                      this.querySelector('span').textContent = '点击收起答案';
+                  }
+              });
+          });
+      }
+
+      // 题目数量选择层返回模式选择按钮
+      document.getElementById('count-back-btn').addEventListener('click', function() {
+          questionCountSelection.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+          document.getElementById('question-count-input').value = '';
+          document.getElementById('count-error-message').style.display = 'none';
+      });
+
+      // 更新题目数量显示
+      function updateQuestionCountDisplay() {
+          const countInfo = document.querySelector('#question-count-selection p');
+          const questionCountInput = document.getElementById('question-count-input');
+          if (countInfo && questionCountInput) {
+              const maxCount = originalQuestions.length;
+              const bankName = selectedBank;
+              countInfo.textContent = `题库总数：${maxCount}题 (${bankName})`;
+              questionCountInput.max = maxCount;
+              questionCountInput.placeholder = `请输入题目数量（1-${maxCount}）`;
+          }
+      }
+
+      // 更新阶段性练习界面
+      function updateStageSelection() {
+          const totalCount = originalQuestions.length;
+          document.getElementById('stage-total-count').textContent = totalCount;
+          document.getElementById('stage-start-input').max = totalCount;
+          document.getElementById('stage-end-input').max = totalCount;
+          document.getElementById('stage-start-input').value = '';
+          document.getElementById('stage-end-input').value = '';
+          document.getElementById('stage-error-message').style.display = 'none';
+      }
+
+      // 初始化阶段性练习
+      function initStageExam(startIndex, endIndex, mode, isRandom = false) {
+          currentMode = mode;
+          clearInterval(timerInterval);
+          startTime = Date.now();
+          timerInterval = setInterval(updateElapsedTime, 1000);
+          
+          // 显示当前模式和题库信息
+          const modeIcon = mode === 'practice' ? '<i class="fas fa-book"></i>' : '<i class="fas fa-clipboard-check"></i>';
+          const modeName = mode === 'practice' ? '练习模式' : '考试模式';
+          const orderText = isRandom ? '随机' : '顺序';
+          currentModeDisplay.innerHTML = `${modeIcon} ${modeName} - 阶段练习（第${startIndex}-${endIndex}题·${orderText}）`;
+          currentModeDisplay.style.color = mode === 'practice' ? '#2ecc71' : '#3498db';
+          
+          // 清空状态
+          userAnswers = {};
+          results = {};
+          shuffledQuestions = [];
+          usedQuestionIndices = [];
+          document.getElementById('exam-form').innerHTML = '';
+          document.getElementById('progress-bar').style.width = '0';
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: 00:00';
+          document.getElementById('final-time').textContent = "";
+          
+          // 获取指定区间的题目
+          const tempQuestions = [];
+          for (let i = startIndex - 1; i < endIndex; i++) {
+              if (i < originalQuestions.length) {
+                  tempQuestions.push(originalQuestions[i]);
+                  usedQuestionIndices.push(i);
+              }
+          }
+          
+          // 根据选择决定是否打乱
+          if (isRandom) {
+              shuffledQuestions = withSessionQuestionKeys(shuffle(tempQuestions.slice()), `stage-${Date.now()}`);
+          } else {
+              shuffledQuestions = withSessionQuestionKeys(tempQuestions, `stage-${Date.now()}`);
+          }
+          
+          // 生成题目
+          const examForm = document.getElementById('exam-form');
+          shuffledQuestions.forEach((q, index) => {
+              const questionDiv = document.createElement('div');
+              questionDiv.className = 'question fade-in';
+              const questionKey = getQuestionKey(q, index);
+              questionDiv.id = `question-${questionKey}`;
+              
+              // 判断是否为多选题（答案包含空格）
+              const isMultipleChoice = q.answer && q.answer.includes(' ');
+              const inputType = isMultipleChoice ? 'checkbox' : 'radio';
+              const inputName = `question-${questionKey}`;
+              
+              let optionsHtml = '';
+              getQuestionOptions(q).forEach(option => {
+                  const optionLetter = option.trim().charAt(0).toUpperCase();
+                  optionsHtml += `
+                      <div class="option" data-option="${optionLetter}">
+                          <label>
+                              <input type="${inputType}" name="${inputName}" value="${optionLetter}">
+                              ${option}
+                          </label>
+                      </div>
+                  `;
+              });
+              
+              const questionTypeLabel = isMultipleChoice ? '<span class="question-type">[多选题]</span>' : '';
+              
+              // 题号显示：乱序时显示序号，顺序时显示实际题号
+              const questionNumber = isRandom ? (index + 1) : (startIndex + index);
+              
+              questionDiv.innerHTML = `
+                  <div class="question-title">
+                      <span class="question-number">${questionNumber}. </span>
+                      ${questionTypeLabel}
+                      ${q.question}
+                  </div>
+                  <div class="options">
+                      ${optionsHtml}
+                  </div>
+                  <div class="answer-feedback" id="feedback-${questionKey}"></div>
+              `;
+              examForm.appendChild(questionDiv);
+          });
+          
+          updateProgressBar();
+          
+          // 如果是练习模式，添加选项点击事件监听
+          if (mode === 'practice') {
+              document.querySelectorAll('.option').forEach(option => {
+                  option.addEventListener('click', handlePracticeModeSelection);
+              });
+          }
+      }
+
+      // 模式选择逻辑
+      const practiceModeBtn = document.getElementById('practice-mode-btn');
+      const examModeBtn = document.getElementById('exam-mode-btn');
+      const stageModeBtn = document.getElementById('stage-mode-btn');
+      const stageSelection = document.getElementById('stage-selection');
+      const currentModeDisplay = document.getElementById('current-mode');
+
+      practiceModeBtn.addEventListener('click', function() {
+          currentMode = 'practice';
+          modeSelection.classList.add('hidden');
+          questionCountSelection.classList.remove('hidden');
+          currentModeDisplay.innerHTML = '<i class="fas fa-book"></i> 练习模式 - 答题后可立即查看答案';
+          currentModeDisplay.style.color = '#27ae60';
+          updateQuestionCountDisplay();
+      });
+
+      examModeBtn.addEventListener('click', function() {
+          currentMode = 'exam';
+          modeSelection.classList.add('hidden');
+          questionCountSelection.classList.remove('hidden');
+          currentModeDisplay.innerHTML = '<i class="fas fa-clipboard-check"></i> 考试模式 - 提交后统一查看结果';
+          currentModeDisplay.style.color = '#3498db';
+          updateQuestionCountDisplay();
+      });
+
+      stageModeBtn.addEventListener('click', function() {
+          modeSelection.classList.add('hidden');
+          stageSelection.classList.remove('hidden');
+          updateStageSelection();
+      });
+
+      // 题目数量选择逻辑
+      const questionCountInput = document.getElementById('question-count-input');
+      const questionCountSubmit = document.getElementById('question-count-submit');
+      const countErrorMessage = document.getElementById('count-error-message');
+      const examContent = document.getElementById('exam-content');
+
+      questionCountSubmit.addEventListener('click', function() {
+          const count = parseInt(questionCountInput.value);
+          if (isNaN(count) || count < 1 || count > originalQuestions.length) {
+              countErrorMessage.style.display = 'block';
+              return;
+          }
+          // 确保隐藏考试结果区域，并显示考试区域（考试区域可能保留上次结果）
+          document.getElementById('results').style.display = 'none';
+          document.getElementById('exam-form').style.display = 'block';
+          // 无论什么模式都显示提交按钮
+          document.getElementById('submit-btn').style.display = 'block';
+          
+          questionCountSelection.classList.add('hidden');
+          examContent.classList.remove('hidden');
+          initExam(count);
+      });
+      
+      // 回车确认题目数量
+      questionCountInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+              questionCountSubmit.click();
+          }
+      });
+
+      // 阶段性练习按钮事件
+      const stageStartInput = document.getElementById('stage-start-input');
+      const stageEndInput = document.getElementById('stage-end-input');
+      const stagePracticeSubmit = document.getElementById('stage-practice-submit');
+      const stageExamSubmit = document.getElementById('stage-exam-submit');
+      const stageBackBtn = document.getElementById('stage-back-btn');
+      const stageErrorMessage = document.getElementById('stage-error-message');
+
+      function validateStageInput() {
+          const start = parseInt(stageStartInput.value);
+          const end = parseInt(stageEndInput.value);
+          const maxCount = originalQuestions.length;
+          
+          if (isNaN(start) || isNaN(end) || start < 1 || end < 1 || start > maxCount || end > maxCount || start > end) {
+              stageErrorMessage.textContent = '请输入有效的题目区间！起始题号需小于等于结束题号';
+              stageErrorMessage.style.display = 'block';
+              return null;
+          }
+          
+          return { start, end };
+      }
+
+      stagePracticeSubmit.addEventListener('click', function() {
+          const range = validateStageInput();
+          if (!range) return;
+          
+          // 获取顺序选择
+          const orderType = document.querySelector('input[name="stage-order"]:checked').value;
+          const isRandom = orderType === 'random';
+          
+          document.getElementById('results').style.display = 'none';
+          document.getElementById('exam-form').style.display = 'block';
+          document.getElementById('submit-btn').style.display = 'block';
+          
+          stageSelection.classList.add('hidden');
+          examContent.classList.remove('hidden');
+          initStageExam(range.start, range.end, 'practice', isRandom);
+      });
+
+      stageExamSubmit.addEventListener('click', function() {
+          const range = validateStageInput();
+          if (!range) return;
+          
+          // 获取顺序选择
+          const orderType = document.querySelector('input[name="stage-order"]:checked').value;
+          const isRandom = orderType === 'random';
+          
+          document.getElementById('results').style.display = 'none';
+          document.getElementById('exam-form').style.display = 'block';
+          document.getElementById('submit-btn').style.display = 'block';
+          
+          stageSelection.classList.add('hidden');
+          examContent.classList.remove('hidden');
+          initStageExam(range.start, range.end, 'exam', isRandom);
+      });
+
+      stageBackBtn.addEventListener('click', function() {
+          stageSelection.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+          stageStartInput.value = '';
+          stageEndInput.value = '';
+          stageErrorMessage.style.display = 'none';
+      });
+
+      // 回车确认阶段性练习
+      stageEndInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+              stagePracticeSubmit.click();
+          }
+      });
+
+      // 洗牌函数（Fisher-Yates 算法）
+      function shuffle(array) {
+          let currentIndex = array.length, temporaryValue, randomIndex;
+          while (currentIndex !== 0) {
+              randomIndex = Math.floor(Math.random() * currentIndex);
+              currentIndex -= 1;
+              temporaryValue = array[currentIndex];
+              array[currentIndex] = array[randomIndex];
+              array[randomIndex] = temporaryValue;
+          }
+          return array;
+      }
+
+      function getQuestionOptions(question) {
+          if (Array.isArray(question.options)) {
+              return question.options;
+          }
+          if (typeof question.options === 'string') {
+              const text = question.options.trim();
+              if (!text) return ['A. 正确', 'B. 错误'];
+              return text.split(';').map(item => item.trim()).filter(Boolean);
+          }
+          return ['A. 正确', 'B. 错误'];
+      }
+
+      function getSingleChoiceAnswer(question) {
+          const raw = String(question.answer || '').trim();
+          if (/^[A-Za-z]$/.test(raw)) {
+              return raw.toUpperCase();
+          }
+
+          const normalized = raw.toLowerCase();
+          const options = getQuestionOptions(question);
+          for (const option of options) {
+              const letter = option.trim().charAt(0).toUpperCase();
+              const text = option.replace(/^[A-Za-z][\.、\s]*/, '').trim().toLowerCase();
+              if (text === normalized) {
+                  return letter;
+              }
+          }
+
+          if (normalized === '正确' || normalized === 'true') return 'A';
+          if (normalized === '错误' || normalized === 'false') return 'B';
+          return raw;
+      }
+
+      function getQuestionKey(question, fallbackIndex = 0) {
+          if (question && question.__qid) return question.__qid;
+          const rawId = question && question.id !== undefined ? String(question.id) : `idx-${fallbackIndex}`;
+          return `q-${rawId}-${fallbackIndex}`;
+      }
+
+      function withSessionQuestionKeys(questions, prefix) {
+          return questions.map((q, idx) => ({
+              ...q,
+              __qid: `${prefix}-${idx}-${q.id !== undefined ? q.id : 'na'}`
+          }));
+      }
+      
+      // 初始化考试：打乱题目、清空旧状态、启动计时器
+      function initExam(count) {
+          clearInterval(timerInterval);
+          startTime = Date.now();
+          timerInterval = setInterval(updateElapsedTime, 1000);
+          
+          // 显示当前模式和题库信息
+          const modeIcon = currentMode === 'practice' ? '<i class="fas fa-book"></i>' : '<i class="fas fa-clipboard-check"></i>';
+          const modeName = currentMode === 'practice' ? '练习模式' : '考试模式';
+          const bankName = selectedBank;
+          currentModeDisplay.innerHTML = `${modeIcon} ${modeName} - ${bankName}`;
+          currentModeDisplay.style.color = currentMode === 'practice' ? '#2ecc71' : '#3498db';
+          
+          // 清空状态
+          userAnswers = {};
+          results = {};
+          shuffledQuestions = [];
+          usedQuestionIndices = [];
+          document.getElementById('exam-form').innerHTML = '';
+          document.getElementById('progress-bar').style.width = '0';
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: 00:00';
+          document.getElementById('final-time').textContent = "";
+          
+          // 打乱题库并选择题目
+          const shuffled = shuffle(originalQuestions.slice());
+          const actualCount = Math.min(count, shuffled.length);
+          for (let i = 0; i < actualCount; i++) {
+              shuffledQuestions.push(shuffled[i]);
+              usedQuestionIndices.push(i);
+          }
+          shuffledQuestions = withSessionQuestionKeys(shuffledQuestions, `exam-${Date.now()}`);
+          
+          // 生成题目
+          const examForm = document.getElementById('exam-form');
+          shuffledQuestions.forEach((q, index) => {
+              const questionDiv = document.createElement('div');
+              questionDiv.className = 'question fade-in';
+              const questionKey = getQuestionKey(q, index);
+              questionDiv.id = `question-${questionKey}`;
+              
+              // 判断是否为多选题（答案包含空格）
+              const isMultipleChoice = q.answer && q.answer.includes(' ');
+              const inputType = isMultipleChoice ? 'checkbox' : 'radio';
+              const inputName = `question-${questionKey}`;
+              
+              let optionsHtml = '';
+              getQuestionOptions(q).forEach(option => {
+                  const optionLetter = option.trim().charAt(0).toUpperCase();
+                  optionsHtml += `
+                      <div class="option" data-option="${optionLetter}">
+                          <label>
+                              <input type="${inputType}" name="${inputName}" value="${optionLetter}">
+                              ${option}
+                          </label>
+                      </div>
+                  `;
+              });
+              
+              const questionTypeLabel = isMultipleChoice ? '<span class="question-type">[多选题]</span>' : '';
+              
+              questionDiv.innerHTML = `
+                  <div class="question-title">
+                      <span class="question-number">${index + 1}. </span>
+                      ${questionTypeLabel}
+                      ${q.question}
+                  </div>
+                  <div class="options">
+                      ${optionsHtml}
+                  </div>
+                  <div class="answer-feedback" id="feedback-${questionKey}"></div>
+              `;
+              examForm.appendChild(questionDiv);
+          });
+          
+          updateProgressBar();
+          
+          // 如果是练习模式，添加选项点击事件监听
+          if (currentMode === 'practice') {
+              document.querySelectorAll('.option').forEach(option => {
+                  option.addEventListener('click', handlePracticeModeSelection);
+              });
+          }
+      }
+      
+      // 练习模式下，点击选项后的处理
+      function handlePracticeModeSelection(e) {
+          const optionDiv = this;
+          const questionDiv = optionDiv.closest('.question');
+          const questionId = questionDiv.id.replace('question-', '');
+          const selectedOption = optionDiv.dataset.option;
+          const feedbackDiv = document.getElementById(`feedback-${questionId}`);
+          
+          // 查找对应的题目和正确答案
+          const question = shuffledQuestions.find((q, index) => getQuestionKey(q, index) === questionId);
+          const correctAnswer = question.answer;
+          const isMultipleChoice = correctAnswer && correctAnswer.includes(' ');
+          const expectedSingleAnswer = getSingleChoiceAnswer(question);
+          
+          if (isMultipleChoice) {
+              // 多选题逻辑
+              const checkbox = optionDiv.querySelector('input[type="checkbox"]');
+              
+              // 切换复选框状态
+              checkbox.checked = !checkbox.checked;
+              
+              // 更新UI
+              if (checkbox.checked) {
+                  optionDiv.classList.add('selected');
+              } else {
+                  optionDiv.classList.remove('selected');
+              }
+              
+              // 收集所有选中的选项
+              const selectedOptions = [];
+              questionDiv.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+                  selectedOptions.push(input.value);
+              });
+              
+              // 保存用户答案（多选答案用空格分隔）
+              userAnswers[questionId] = selectedOptions.sort().join(' ');
+              
+              // 显示反馈（只有选择了选项才显示）
+              if (selectedOptions.length > 0) {
+                  feedbackDiv.style.display = 'block';
+                  const userAnswerStr = selectedOptions.sort().join(' ');
+                  const correctAnswerArray = correctAnswer.split(' ').sort();
+                  const correctAnswerStr = correctAnswerArray.join(' ');
+                  
+                  if (userAnswerStr === correctAnswerStr) {
+                      // 完全正确 - 显示完整答案
+                      feedbackDiv.className = 'answer-feedback correct';
+                      feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> 全部正确！答案是：${correctAnswer}`;
+                  } else {
+                      // 检查是否有部分正确
+                      const correctCount = selectedOptions.filter(option => correctAnswerArray.includes(option)).length;
+                      const incorrectCount = selectedOptions.filter(option => !correctAnswerArray.includes(option)).length;
+                      
+                      if (incorrectCount > 0) {
+                          // 有错误选项 - 显示错误
+                          feedbackDiv.className = 'answer-feedback incorrect';
+                          feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 答案错误！有选项选择错误`;
+                      } else if (correctCount > 0 && correctCount < correctAnswerArray.length) {
+                          // 部分正确，但未选全 - 只提示部分正确，不显示完整答案
+                          feedbackDiv.className = 'answer-feedback partial';
+                          feedbackDiv.innerHTML = `<i class="fas fa-info-circle"></i> 部分正确！还有其他正确选项未选择`;
+                      } else {
+                          // 完全错误
+                          feedbackDiv.className = 'answer-feedback incorrect';
+                          feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 答案错误！请重新选择`;
+                      }
+                  }
+              } else {
+                  feedbackDiv.style.display = 'none';
+              }
+          } else {
+              // 单选题逻辑（保持原有逻辑）
+              const radio = optionDiv.querySelector('input[type="radio"]');
+              radio.checked = true;
+              
+              // 保存用户答案
+              userAnswers[questionId] = selectedOption;
+              
+              // 更新UI：标记所有选项
+              questionDiv.querySelectorAll('.option').forEach(opt => {
+                  opt.classList.remove('selected');
+                  if (opt.dataset.option === selectedOption) {
+                      opt.classList.add('selected');
+                  }
+              });
+              
+              // 显示反馈
+              feedbackDiv.style.display = 'block';
+              if (selectedOption === expectedSingleAnswer) {
+                  feedbackDiv.className = 'answer-feedback correct';
+                  feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> 正确！答案是：${question.answer}`;
+              } else {
+                  feedbackDiv.className = 'answer-feedback incorrect';
+                  feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> 错误！正确答案是：${question.answer}`;
+              }
+          }
+          
+          updateProgressBar();
+      }
+      
+      // 更新时间显示（格式：mm:ss）
+      function updateElapsedTime() {
+          const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+          const minutes = Math.floor(elapsedSeconds / 60);
+          const seconds = elapsedSeconds % 60;
+          const formattedTime = 
+              (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+              (seconds < 10 ? "0" + seconds : seconds);
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: ' + formattedTime;
+      }
+      
+      function updateProgressBar() {
+          const answered = Object.keys(userAnswers).length;
+          const total = shuffledQuestions.length;
+          const percentage = (answered / total) * 100;
+          document.getElementById('progress-bar').style.width = `${percentage}%`;
+      }
+      
+      function calculateResults() {
+          clearInterval(timerInterval);
+          const totalElapsed = Math.floor((Date.now() - startTime) / 1000);
+          const minutes = Math.floor(totalElapsed / 60);
+          const seconds = totalElapsed % 60;
+          const formattedTotalTime = 
+              (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+              (seconds < 10 ? "0" + seconds : seconds);
+          
+          let correct = 0;
+          let partiallyCorrect = 0;
+          let incorrectQuestions = []; // 收集错题
+          shuffledQuestions.forEach((q, idx) => {
+              const qKey = getQuestionKey(q, idx);
+              const userAnswer = userAnswers[qKey] || '';
+              let isCorrect = false;
+              let isPartiallyCorrect = false;
+              
+              // 处理多选题和单选题的答案比较
+              if (q.answer && q.answer.includes(' ')) {
+                  // 多选题：计算完全正确、部分正确
+                  const correctAnswerArray = q.answer.split(' ').sort();
+                  const userAnswerArray = userAnswer.split(' ').filter(a => a).sort();
+                  
+                  isCorrect = JSON.stringify(correctAnswerArray) === JSON.stringify(userAnswerArray);
+                  
+                  if (!isCorrect && userAnswerArray.length > 0) {
+                      // 计算交集（选对的选项）
+                      const userSet = new Set(userAnswerArray);
+                      const correctSet = new Set(correctAnswerArray);
+                      const intersection = [...userSet].filter(x => correctSet.has(x));
+                      isPartiallyCorrect = intersection.length > 0;
+                  }
+              } else {
+                  // 单选题：直接比较
+                  isCorrect = (userAnswer === getSingleChoiceAnswer(q));
+              }
+              
+              results[qKey] = {
+                  question: q,
+                  userAnswer: userAnswer,
+                  isCorrect: isCorrect,
+                  isPartiallyCorrect: isPartiallyCorrect
+              };
+              
+              if (isCorrect) {
+                  correct++;
+              } else if (isPartiallyCorrect) {
+                  partiallyCorrect++;
+                  incorrectQuestions.push(q); // 部分正确也算错题，需要加强练习
+              } else {
+                  incorrectQuestions.push(q); // 添加到错题集
+              }
+          });
+          
+          // 保存错题集到sessionStorage
+          if (incorrectQuestions.length > 0) {
+              sessionStorage.setItem('incorrectQuestions', JSON.stringify(incorrectQuestions));
+          } else {
+              sessionStorage.removeItem('incorrectQuestions');
+          }
+          
+          const accuracy = ((correct / shuffledQuestions.length) * 100).toFixed(1);
+          
+          // 更新结果统计
+          document.getElementById('score').textContent = correct;
+          document.getElementById('total').textContent = shuffledQuestions.length;
+          document.getElementById('accuracy').textContent = `${accuracy}%`;
+          document.getElementById('final-time').textContent = "总作答用时：" + formattedTotalTime;
+          
+          // 更新结果统计卡片
+          document.getElementById('summary-score').textContent = correct;
+          document.getElementById('summary-total').textContent = shuffledQuestions.length;
+          document.getElementById('summary-accuracy').textContent = `${accuracy}%`;
+          document.getElementById('summary-time').textContent = formattedTotalTime;
+          
+          displayResults('all');
+      }
+      
+      function submitExam() {
+          // 检查是否全部作答，否则滚动定位到未答题目，不再显示提醒弹窗
+          for (let i = 0; i < shuffledQuestions.length; i++) {
+              const q = shuffledQuestions[i];
+              const qKey = getQuestionKey(q, i);
+              if (!userAnswers[qKey] || userAnswers[qKey] === '') {
+                  const questionElem = document.getElementById(`question-${qKey}`);
+                  if (questionElem) {
+                      document.querySelectorAll('.question').forEach(q => q.classList.remove('current-question'));
+                      questionElem.classList.add('current-question');
+                      questionElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  return;
+              }
+          }
+          
+          calculateResults();
+          
+          // 隐藏考试区域、显示结果区域并自动滚动到页面顶部
+          document.getElementById('exam-form').style.display = 'none';
+          document.getElementById('submit-btn').style.display = 'none';
+          document.getElementById('results').style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
+      function displayResults(filter) {
+          const resultDetails = document.getElementById('result-details');
+          resultDetails.innerHTML = '';
+          Object.values(results).forEach((result, index) => {
+              if (filter === 'incorrect' && result.isCorrect) return;
+              
+              // 确定题目状态
+              let statusClass = 'incorrect';
+              let statusText = '<i class="fas fa-times"></i> 错误';
+              let divClass = 'incorrect';
+              
+              if (result.isCorrect) {
+                  statusClass = 'correct';
+                  statusText = '<i class="fas fa-check"></i> 全部正确';
+                  divClass = 'correct';
+              } else if (result.isPartiallyCorrect) {
+                  statusClass = 'partial';
+                  statusText = '<i class="fas fa-exclamation-triangle"></i> 部分正确';
+                  divClass = 'partial';
+              }
+              
+              const resultDiv = document.createElement('div');
+              resultDiv.className = `question fade-in ${divClass}`;
+              resultDiv.innerHTML = `
+                  <div class="question-title">
+                      <span class="question-number">${index + 1}. </span>
+                      ${result.question.question}
+                      <span class="status ${statusClass}">
+                          ${statusText}
+                      </span>
+                  </div>
+                  <div class="options">
+                      ${getQuestionOptions(result.question).map(option => {
+                          const letter = option.trim().charAt(0).toUpperCase();
+                          let className = '';
+                          let icon = '';
+                          
+                          // 判断是否为多选题
+                          const isMultipleChoice = result.question.answer && result.question.answer.includes(' ');
+                          const correctAnswers = isMultipleChoice
+                              ? result.question.answer.split(' ')
+                              : [getSingleChoiceAnswer(result.question)];
+                          const userAnswers = result.userAnswer ? (isMultipleChoice ? result.userAnswer.split(' ') : [result.userAnswer]) : [];
+                          
+                          const isCorrectAnswer = correctAnswers.includes(letter);
+                          const isUserAnswer = userAnswers.includes(letter);
+                          
+                          if (isCorrectAnswer && isUserAnswer) {
+                              className = 'correct';
+                              icon = '<i class="fas fa-check-circle"></i>';
+                          } else if (isCorrectAnswer && !isUserAnswer) {
+                              className = 'missed';
+                              icon = '<i class="fas fa-circle"></i>';
+                          } else if (!isCorrectAnswer && isUserAnswer) {
+                              className = 'incorrect';
+                              icon = '<i class="fas fa-times-circle"></i>';
+                          }
+                          
+                          return `
+                              <div class="option ${className}">
+                                  ${option} ${icon}
+                              </div>
+                          `;
+                      }).join('')}
+                      <div class="answer-summary">
+                          <div class="user-answer">你的答案: ${result.userAnswer || '未作答'}</div>
+                          <div class="correct-answer">正确答案: ${result.question.answer}</div>
+                      </div>
+                  </div>
+              `;
+              resultDetails.appendChild(resultDiv);
+          });
+      }
+      
+      // 监听考试模式下的答案选项变化
+      document.addEventListener('change', function(e) {
+          if (currentMode === 'exam' && (e.target.type === 'radio' || e.target.type === 'checkbox') && e.target.name.startsWith('question-')) {
+              const questionId = e.target.name.replace('question-', '');
+              const questionDiv = e.target.closest('.question');
+              
+              if (e.target.type === 'radio') {
+                  // 单选题逻辑
+                  userAnswers[questionId] = e.target.value;
+                  
+                  // 更新选项UI
+                  questionDiv.querySelectorAll('.option').forEach(opt => {
+                      opt.classList.remove('selected');
+                  });
+                  e.target.closest('.option').classList.add('selected');
+              } else if (e.target.type === 'checkbox') {
+                  // 多选题逻辑
+                  const selectedOptions = [];
+                  questionDiv.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+                      selectedOptions.push(input.value);
+                  });
+                  
+                  // 保存用户答案（多选答案用空格分隔）
+                  userAnswers[questionId] = selectedOptions.sort().join(' ');
+                  
+                  // 更新选项UI
+                  questionDiv.querySelectorAll('.option').forEach(opt => {
+                      const checkbox = opt.querySelector('input[type="checkbox"]');
+                      if (checkbox && checkbox.checked) {
+                          opt.classList.add('selected');
+                      } else {
+                          opt.classList.remove('selected');
+                      }
+                  });
+              }
+              
+              updateProgressBar();
+          }
+      });
+      
+      // 提交答案按钮事件
+      document.getElementById('submit-btn').addEventListener('click', submitExam);
+      
+      // "重新测试"按钮：保持原题数重新考试，重新打乱顺序，并自动滚动到第一题
+      document.getElementById('restart-btn').addEventListener('click', function() {
+          clearInterval(timerInterval);
+          document.getElementById('exam-form').style.display = 'block';
+          document.getElementById('submit-btn').style.display = 'block'; // 无论什么模式都显示提交按钮
+          document.getElementById('results').style.display = 'none';
+          
+          // 重新初始化考试，打乱题目顺序
+          initExam(shuffledQuestions.length);
+          
+          // 在initExam完成后，滚动到第一题位置
+          setTimeout(() => {
+              // 如果有题目，获取第一个题目并滚动到它的位置
+              const firstQuestion = document.querySelector('.question');
+              if (firstQuestion) {
+                  firstQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+          }, 100); // 短暂延迟确保DOM已更新
+      });
+      
+      // "重新选择题库"按钮：完全重置状态后，回到题库选择界面
+      document.getElementById('reselect-btn').addEventListener('click', function() {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          startTime = null;
+          userAnswers = {};
+          results = {};
+          shuffledQuestions = [];
+          usedQuestionIndices = [];
+          currentSubject = selectedBank;
+          originalQuestions = questionBanks[selectedBank];
+          document.getElementById('exam-form').innerHTML = '';
+          document.getElementById('progress-bar').style.width = '0';
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: 00:00';
+          document.getElementById('final-time').textContent = "";
+          
+          // 回到模式选择界面
+          examContent.classList.add('hidden');
+          modeSelection.classList.remove('hidden');
+          questionCountInput.value = '';
+          countErrorMessage.style.display = 'none';
+      });
+      
+      // "错题重新测试"按钮：从错题集重新生成考试
+      document.getElementById('retry-incorrect-btn').addEventListener('click', function() {
+          const incorrectQuestions = JSON.parse(sessionStorage.getItem('incorrectQuestions') || '[]');
+          if (incorrectQuestions.length === 0) {
+              alert('没有错题可供重新测试！');
+              return;
+          }
+          
+          clearInterval(timerInterval);
+          document.getElementById('exam-form').style.display = 'block';
+          document.getElementById('submit-btn').style.display = 'block';
+          document.getElementById('results').style.display = 'none';
+          
+          // 直接使用错题集，不再调用洗牌算法
+          userAnswers = {};
+          results = {};
+          shuffledQuestions = withSessionQuestionKeys([...incorrectQuestions], `retry-${Date.now()}`); // 使用错题集的副本
+          
+          // 更新模式显示
+          if (currentMode === 'practice') {
+              currentModeDisplay.innerHTML = `<i class="fas fa-book"></i> 练习模式 - ${selectedBank}错题重测`;
+              currentModeDisplay.style.color = '#e74c3c';
+          } else {
+              currentModeDisplay.innerHTML = `<i class="fas fa-clipboard-check"></i> 考试模式 - ${selectedBank}错题重测`;
+              currentModeDisplay.style.color = '#e74c3c';
+          }
+          
+          // 开始计时
+          startTime = Date.now();
+          timerInterval = setInterval(updateElapsedTime, 1000);
+          
+          // 清空旧的考试表单和进度条
+          document.getElementById('exam-form').innerHTML = '';
+          document.getElementById('progress-bar').style.width = '0';
+          document.getElementById('timer').innerHTML = '<i class="fas fa-clock"></i> 已用时: 00:00';
+          
+          // 生成错题题目
+          const examForm = document.getElementById('exam-form');
+          shuffledQuestions.forEach((q, index) => {
+              const questionDiv = document.createElement('div');
+              questionDiv.className = 'question fade-in';
+              const questionKey = getQuestionKey(q, index);
+              questionDiv.id = `question-${questionKey}`;
+              
+              // 判断是否为多选题（答案包含空格）
+              const isMultipleChoice = q.answer && q.answer.includes(' ');
+              const inputType = isMultipleChoice ? 'checkbox' : 'radio';
+              const inputName = `question-${questionKey}`;
+              
+              let optionsHtml = '';
+              getQuestionOptions(q).forEach(option => {
+                  const optionLetter = option.trim().charAt(0).toUpperCase();
+                  optionsHtml += `
+                      <div class="option" data-option="${optionLetter}">
+                          <label>
+                              <input type="${inputType}" name="${inputName}" value="${optionLetter}">
+                              ${option}
+                          </label>
+                      </div>
+                  `;
+              });
+              
+              const questionTypeLabel = isMultipleChoice ? '<span class="question-type">[多选题]</span>' : '';
+              
+              questionDiv.innerHTML = `
+                  <div class="question-title">
+                      <span class="question-number">${index + 1}. </span>
+                      ${questionTypeLabel}
+                      ${q.question}
+                  </div>
+                  <div class="options">
+                      ${optionsHtml}
+                  </div>
+                  <div class="answer-feedback" id="feedback-${questionKey}"></div>
+              `;
+              examForm.appendChild(questionDiv);
+          });
+          
+          // 如果是练习模式，添加选项点击事件监听
+          if (currentMode === 'practice') {
+              document.querySelectorAll('.option').forEach(option => {
+                  option.addEventListener('click', handlePracticeModeSelection);
+              });
+          }
+          
+          // 显示错题重测的提示信息
+          const noteDiv = document.createElement('div');
+          noteDiv.style.textAlign = 'center';
+          noteDiv.style.padding = '10px';
+          noteDiv.style.marginBottom = '20px';
+          noteDiv.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+          noteDiv.style.borderRadius = '5px';
+          noteDiv.style.fontWeight = 'bold';
+          noteDiv.style.color = '#e74c3c';
+          noteDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> 当前正在进行错题重测，共 ${shuffledQuestions.length} 道题`;
+          examForm.insertBefore(noteDiv, examForm.firstChild);
+          
+          // 自动滚动到第一题
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+              document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+              this.classList.add('active');
+              displayResults(this.getAttribute('data-filter'));
+          });
+      });
+  </script>
+</body>
+</html>
+
